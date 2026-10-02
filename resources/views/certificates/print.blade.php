@@ -1,0 +1,217 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container-fluid px-4 py-4 d-print-block">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <!-- Print Action Bar (Hidden when printing) -->
+            <div class="d-flex justify-content-between align-items-center mb-3 d-print-none">
+                <a href="{{ route('residents.index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Residents
+                </a>
+                <button onclick="window.print()" class="btn btn-primary btn-sm px-4">
+                    <i class="bi bi-printer me-1"></i> Print Certificate
+                </button>
+            </div>
+
+            <!-- A4 Bond Paper Preview Container -->
+            <div class="bg-white shadow-lg position-relative mx-auto" style="width: 100%; max-width: 794px; aspect-ratio: 1 / 1.414; padding: 45px 55px; overflow: hidden;">
+                
+                <style>
+                    .header-container {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 30px;
+                    }
+                    .header-text {
+                        font-family: 'Copperplate Gothic Bold', 'Times New Roman', serif;
+                        font-size: 11pt;
+                        font-weight: bold;
+                        line-height: 1.2;
+                        text-align: center;
+                    }
+                    .office-text {
+                        font-family: 'Edwardian Script ITC', 'Brush Script MT', cursive;
+                        font-size: 22pt;
+                        font-weight: bold;
+                        text-align: center;
+                        margin-top: 5px;
+                        margin-bottom: 8px;
+                    }
+                    .ribbon-container {
+                        text-align: center;
+                        position: relative;
+                        width: 95%;
+                        margin: 5px auto 15px auto;
+                    }
+                    .ribbon-banner {
+                        width: 100%;
+                        height: auto;
+                        object-fit: contain;
+                    }
+                    .ribbon-title {
+                        position: absolute;
+                        top: 52%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        font-family: 'Algerian', 'Times New Roman', serif;
+                        font-size: 20pt;
+                        font-weight: bold;
+                        letter-spacing: 1px;
+                        color: #000;
+                        text-transform: uppercase;
+                        width: 100%;
+                        margin: 0;
+                        white-space: nowrap;
+                    }
+                    .content-text {
+                        font-family: 'Century Gothic', Arial, sans-serif;
+                        font-size: 13pt;
+                        text-align: justify;
+                        line-height: 1.6;
+                    }
+                    .content-text p {
+                        text-indent: 45px;
+                        margin-bottom: 12px;
+                    }
+                    .signatory {
+                        margin-top: 45px;
+                        float: right;
+                        text-align: center;
+                        font-family: 'Century Gothic', Arial, sans-serif;
+                        font-size: 13pt;
+                    }
+                    .certificate-footer {
+                        position: absolute;
+                        bottom: 30px;
+                        left: 55px;
+                        right: 55px;
+                        display: flex;
+                        align-items: center;
+                        gap: 15px;
+                        font-family: 'Century Gothic', Arial, sans-serif;
+                        font-size: 9pt;
+                    }
+
+                    @media print {
+                        @page { size: A4; margin: 0; }
+                        body { background: white !important; }
+                        .container-fluid { padding: 0 !important; }
+                        .shadow-lg, .shadow-sm { box-shadow: none !important; }
+                        .d-print-none { display: none !important; }
+                    }
+                </style>
+
+                <!-- Header Section -->
+                <div class="header-container">
+                    <div style="width: 85px; height: 85px; flex-shrink: 0;">
+                        @if($settings->lgu_logo)
+                            <img src="{{ asset('storage/' . $settings->lgu_logo) }}" alt="LGU Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                        @else
+                            <div class="border rounded-circle w-100 h-100 d-flex align-items-center justify-content-center text-muted" style="font-size: 8px;">LGU</div>
+                        @endif
+                    </div>
+                    
+                    <div class="header-text">
+                        <span>REPUBLIC OF THE PHILIPPINES</span><br>
+                        <span>PROVINCE OF ISABELA</span><br>
+                        <span>MUNICIPALITY OF MALLIG</span><br>
+                        <span>BARANGAY OF SIEMPRE VIVA SUR</span>
+                    </div>
+
+                    <div style="width: 85px; height: 85px; flex-shrink: 0;">
+                        @if($settings->brgy_logo)
+                            <img src="{{ asset('storage/' . $settings->brgy_logo) }}" alt="Brgy Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                        @else
+                            <div class="border rounded-circle w-100 h-100 d-flex align-items-center justify-content-center text-muted" style="font-size: 8px;">Brgy</div>
+                        @endif
+                    </div>
+                </div>
+
+                <hr style="border-top: 2px solid #000; opacity: 1;" class="my-1">
+                <div class="office-text" style="margin-bottom: 2rem;">Office of the Punong Barangay</div>
+
+                <!-- Ribbon Banner & Title -->
+                <div class="ribbon-container" style="margin-bottom: 3rem;">
+                    <img src="{{ asset('images/ribbon.jpg') }}" alt="Ribbon Banner" class="ribbon-banner">
+                    <h1 class="ribbon-title">{{ $certificateTitle }}</h1>
+                </div>
+
+                <!-- Document Content based on Certificate Type -->
+                <div class="content-text">
+                    <p class="fw-bold mb-3" style="text-indent: 0 !important;">TO WHOM IT MAY CONCERN:</p>
+                    
+                    @switch($certificate->certificate_type)
+                        @case('Barangay Clearance')
+                            <p>
+                                This is to certify that <strong>{{ $formalFullName }}</strong>, {{ $age }} years of age, {{ $gender }}, {{ $civilStatus }}, is a bona fide resident of Barangay Siempre Viva Sur, Mallig, Isabela.
+                            </p>
+                            <p>
+                                Based on our records, the above-named individual is a law-abiding citizen with no pending criminal case or derogatory record in this community.
+                            </p>
+                            <p>
+                                This certification is issued upon the request of the interested party for whatever legal purpose it may serve.
+                            </p>
+                            @break
+
+                        @case('Certificate of Indigency')
+                            <p>
+                                This is to certify that <strong>{{ $formalFullName }}</strong>, {{ $age }} years of age, {{ $gender }}, {{ $civilStatus }}, and a Filipino citizen, is a bona fide resident of Barangay Siempre Viva Sur, Mallig, Isabela, and belongs to an <strong>indigent family</strong> in this barangay.
+                            </p>
+                            <p>
+                                This certification is issued upon the request of the interested party, who needs the foregoing instrument for {{ $purpose }} and for whatever legal purpose it may serve.
+                            </p>
+                            @break
+
+                        @case('Certificate of Residency')
+                            <p>
+                                This is to certify that <strong>{{ $formalFullName }}</strong>, of legal age, {{ $gender }}, {{ $civilStatus }}, and a Filipino Citizen. According to the records in this office, the above-named individual is a resident of Purok {{ $purok }}, Siempre Viva Sur, Mallig, Isabela.
+                            </p>
+                            <p>
+                                This is issued upon the request of the interested party who needs the foregoing certification for whatever legal purpose it may serve.
+                            </p>
+                            @break
+                    @endswitch
+
+                    <p style="margin-bottom: 4rem;">
+                        Issued this {{ date('jS') }} day of {{ date('F Y') }} at Barangay Siempre Viva Sur, Mallig, Isabela.
+                    </p>
+                </div>
+
+                <!-- Signatory Block & Digital Signature -->
+                <div class="signatory">
+                    <div class="text-center position-relative" style="min-width: 250px;">
+                        @if($settings->show_signature && $settings->captain_signature)
+                            <div style="position: absolute; top: -60px; left: 50%; transform: translateX(-50%); z-index: 5; pointer-events: none;">
+                                <img src="{{ asset('storage/' . $settings->captain_signature) }}" alt="Captain Signature" style="height: 105px; width: auto; object-fit: contain;">
+                            </div>
+                        @endif
+                        
+                        <strong class="d-block text-uppercase" style="position: relative; z-index: 6;">{{ $settings->captain_name }}</strong>
+                        <span style="font-size: 12pt; position: relative; z-index: 6;">{{ $settings->captain_title }}</span>
+                    </div>
+                </div>
+
+                <!-- Footer with QR Code -->
+                <div class="certificate-footer">
+                    <div style="width: 100px; height: 100px; flex-shrink: 0;">
+                        @if($settings->qr_code)
+                            <img src="{{ asset('storage/' . $settings->qr_code) }}" alt="QR Code" style="width: 100%; height: 100%; object-fit: contain;">
+                        @else
+                            <div class="border w-100 h-100 d-flex align-items-center justify-content-center text-muted" style="font-size: 8px;">QR</div>
+                        @endif
+                    </div>
+                    <div>
+                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">SCAN FOR MORE INFO. OR EMAIL</span>
+                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">Brgy. Siempre Viva Sur, Mallig, Isabela</span>
+                        <span class="text-primary" style="font-size: 9pt;">siemprevivasurbarangay@gmail.com</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
