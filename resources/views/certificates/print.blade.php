@@ -102,6 +102,12 @@
                         .shadow-lg, .shadow-sm { box-shadow: none !important; }
                         .d-print-none { display: none !important; }
                     }
+                
+                    /* Editable certificate body */
+                    .tpl-body p { text-indent: 45px; margin-bottom: 12px; text-align: justify; }
+                    .tpl-body p:last-child { margin-bottom: 4rem; }
+                    .tpl-body ul.tpl-list { list-style: none; padding-left: 40px; text-align: justify; margin-bottom: 8px; }
+                    .tpl-body ul.tpl-list li { margin-bottom: 2px; }
                 </style>
 
                 <!-- Header Section -->
@@ -115,10 +121,9 @@
                     </div>
                     
                     <div class="header-text">
-                        <span>REPUBLIC OF THE PHILIPPINES</span><br>
-                        <span>PROVINCE OF ISABELA</span><br>
-                        <span>MUNICIPALITY OF MALLIG</span><br>
-                        <span>BARANGAY OF SIEMPRE VIVA SUR</span>
+                        @foreach($settings->header_lines_list as $line)
+                        <span>{{ $line }}</span>@if(!$loop->last)<br>@endif
+                        @endforeach
                     </div>
 
                     <div style="width: 85px; height: 85px; flex-shrink: 0;">
@@ -131,7 +136,7 @@
                 </div>
 
                 <hr style="border-top: 2px solid #000; opacity: 1;" class="my-1">
-                <div class="office-text" style="margin-bottom: 2rem;">Office of the Punong Barangay</div>
+                <div class="office-text" style="margin-bottom: 2rem;">{{ $settings->header_office }}</div>
 
                 <!-- Ribbon Banner & Title -->
                 <div class="ribbon-container" style="margin-bottom: 3rem;">
@@ -141,43 +146,10 @@
 
                 <!-- Document Content based on Certificate Type -->
                 <div class="content-text">
-                    <p class="fw-bold mb-3" style="text-indent: 0 !important;">TO WHOM IT MAY CONCERN:</p>
-                    
-                    @switch($certificate->certificate_type)
-                        @case('Barangay Clearance')
-                            <p>
-                                This is to certify that <strong>{{ $formalFullName }}</strong>, {{ $age }} years of age, {{ $gender }}, {{ $civilStatus }}, is a bona fide resident of Barangay Siempre Viva Sur, Mallig, Isabela.
-                            </p>
-                            <p>
-                                Based on our records, the above-named individual is a law-abiding citizen with no pending criminal case or derogatory record in this community.
-                            </p>
-                            <p>
-                                This certification is issued upon the request of the interested party for whatever legal purpose it may serve.
-                            </p>
-                            @break
-
-                        @case('Certificate of Indigency')
-                            <p>
-                                This is to certify that <strong>{{ $formalFullName }}</strong>, {{ $age }} years of age, {{ $gender }}, {{ $civilStatus }}, and a Filipino citizen, is a bona fide resident of Barangay Siempre Viva Sur, Mallig, Isabela, and belongs to an <strong>indigent family</strong> in this barangay.
-                            </p>
-                            <p>
-                                This certification is issued upon the request of the interested party, who needs the foregoing instrument for {{ $purpose }} and for whatever legal purpose it may serve.
-                            </p>
-                            @break
-
-                        @case('Certificate of Residency')
-                            <p>
-                                This is to certify that <strong>{{ $formalFullName }}</strong>, of legal age, {{ $gender }}, {{ $civilStatus }}, and a Filipino Citizen. According to the records in this office, the above-named individual is a resident of Purok {{ $purok }}, Siempre Viva Sur, Mallig, Isabela.
-                            </p>
-                            <p>
-                                This is issued upon the request of the interested party who needs the foregoing certification for whatever legal purpose it may serve.
-                            </p>
-                            @break
-                    @endswitch
-
-                    <p style="margin-bottom: 4rem;">
-                        Issued this {{ date('jS') }} day of {{ date('F Y') }} at Barangay Siempre Viva Sur, Mallig, Isabela.
-                    </p>
+                    @if(!empty($salutation))
+                    <p class="fw-bold mb-3" style="text-indent: 0 !important;">{{ $salutation }}</p>
+                    @endif
+                    <div class="tpl-body">{!! $bodyHtml !!}</div>
                 </div>
 
                 <!-- Signatory Block & Digital Signature -->
@@ -204,9 +176,9 @@
                         @endif
                     </div>
                     <div>
-                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">SCAN FOR MORE INFO. OR EMAIL</span>
-                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">Brgy. Siempre Viva Sur, Mallig, Isabela</span>
-                        <span class="text-primary" style="font-size: 9pt;">siemprevivasurbarangay@gmail.com</span>
+                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">{{ $settings->footer_label }}</span>
+                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">{{ $settings->footer_address }}</span>
+                        @if($settings->footer_email)<span class="text-primary" style="font-size: 9pt;">{{ $settings->footer_email }}</span>@endif
                     </div>
                 </div>
 

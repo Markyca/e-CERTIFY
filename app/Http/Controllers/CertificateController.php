@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Resident;
 use App\Models\Certificate;
+use App\Models\CertificateTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth; 
@@ -75,48 +76,66 @@ class CertificateController extends Controller
         $formalFullName = $genderTitle . ' ' . strtoupper($resident->first_name) . ' ' . ($middleInitial ? $middleInitial . ' ' : '') . strtoupper($resident->last_name);
         $standardFullName = strtoupper($resident->first_name) . ' ' . ($middleInitial ? $middleInitial . ' ' : '') . strtoupper($resident->last_name);
 
-        // DETOUR: If it is a First Time Job Seeker, render the 2-page set
-        if ($certificate->certificate_type == 'First Time Job Seeker') {
-            $witnessName = session('witness_name', 'ROSEMARIE M. GALANGAM');
-            $witnessTitle = session('witness_title', 'Barangay Secretary');
-            
-            return view('certificates.print-jobseeker', compact(
-                'certificate', 
-                'resident', 
-                'settings', 
-                'witnessName', 
-                'witnessTitle', 
-                'formalFullName', 
-                'standardFullName'
-            ));
-        }
-
-        // Map regular certificate types
-        $config = [
-            'Barangay Clearance' => 'BARANGAY CLEARANCE',
-            'Certificate of Indigency' => 'CERTIFICATE OF INDIGENCY',
-            'Certificate of Residency' => 'CERTIFICATE OF RESIDENCY',
-        ];
-
-        $certificateTitle = $config[$certificate->certificate_type] ?? 'BARANGAY CLEARANCE';
+        // Values available to the {shortcodes} used in editable certificate bodies
         $age = \Carbon\Carbon::parse($resident->birth_date)->age;
         $gender = strtolower($resident->gender);
         $civilStatus = strtolower($resident->civil_status);
         $purok = $resident->purok;
         $purpose = strtolower($certificate->purpose);
 
+        $vars = [
+            'name'          => $formalFullName,
+            'standard_name' => $standardFullName,
+            'age'           => $age,
+            'gender'        => $gender,
+            'civil_status'  => $civilStatus,
+            'purok'         => $purok,
+            'purpose'       => $purpose,
+            'day'           => date('jS'),
+            'month_year'    => date('F Y'),
+        ];
+
+        // DETOUR: If it is a First Time Job Seeker, render the 2-page set
+        if ($certificate->certificate_type == 'First Time Job Seeker') {
+            // Entered at issue time; otherwise the default witness saved on the Job Seeker edit page
+            $defaultWitness = $settings->witness();
+            $witnessName = session('witness_name') ?: $defaultWitness['name'];
+            $witnessTitle = session('witness_title') ?: $defaultWitness['title'];
+
+            $certTemplate = CertificateTemplate::forType('jobseeker');
+            $oathTemplate = CertificateTemplate::forType('oath');
+            $certBodyHtml = $certTemplate->renderBody($vars);
+            $oathBodyHtml = $oathTemplate->renderBody($vars);
+
+            return view('certificates.print-jobseeker', compact(
+                'certificate',
+                'resident',
+                'settings',
+                'witnessName',
+                'witnessTitle',
+                'formalFullName',
+                'standardFullName',
+                'certTemplate',
+                'oathTemplate',
+                'certBodyHtml',
+                'oathBodyHtml'
+            ));
+        }
+
+        // Regular certificates: clearance / indigency / residency (unknown types fall back to clearance)
+        $templateKey = CertificateTemplate::CERTIFICATE_TYPE_KEYS[$certificate->certificate_type] ?? 'clearance';
+        $template = CertificateTemplate::forType($templateKey);
+        $certificateTitle = $template->title;
+        $salutation = $template->salutation;
+        $bodyHtml = $template->renderBody($vars);
+
         return view('certificates.print', compact(
-            'certificate', 
-            'resident', 
-            'settings', 
-            'certificateTitle', 
-            'formalFullName', 
-            'standardFullName',
-            'age', 
-            'gender', 
-            'civilStatus', 
-            'purok', 
-            'purpose'
+            'certificate',
+            'resident',
+            'settings',
+            'certificateTitle',
+            'salutation',
+            'bodyHtml'
         ));
     }
 

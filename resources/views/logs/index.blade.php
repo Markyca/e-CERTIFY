@@ -8,8 +8,7 @@
             <!-- Page Header -->
             <div class="d-flex justify-content-between align-items-end mb-4">
                 <div>
-                    <h3 class="fw-bold text-dark mb-1">System Audit Logs</h3>
-                    <p class="text-muted small mb-0">Track administrative activity and document issuance events.</p>
+                    <h3 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">System Logs <span class="hint fs-6" data-bs-toggle="tooltip" title="Track administrative activity and document issuance events."><i class="bi bi-info-circle"></i></span></h3>
                 </div>
                 <div>
                     <a href="{{ route('logs.print', request()->all()) }}" class="btn btn-outline-secondary shadow-sm btn-sm" target="_blank">
@@ -59,6 +58,9 @@
                                     <option value="CERTIFICATE_ISSUED" {{ request('action') == 'CERTIFICATE_ISSUED' ? 'selected' : '' }}>CERTIFICATE_ISSUED</option>
                                     <option value="SETTINGS_UPDATED" {{ request('action') == 'SETTINGS_UPDATED' ? 'selected' : '' }}>SETTINGS_UPDATED</option>
                                     <option value="SIGNATURE_TOGGLE" {{ request('action') == 'SIGNATURE_TOGGLE' ? 'selected' : '' }}>SIGNATURE_TOGGLE</option>
+                                    <option value="TEMPLATE_UPDATED" {{ request('action') == 'TEMPLATE_UPDATED' ? 'selected' : '' }}>TEMPLATE_UPDATED</option>
+                                    <option value="TEMPLATE_RESET" {{ request('action') == 'TEMPLATE_RESET' ? 'selected' : '' }}>TEMPLATE_RESET</option>
+                                    <option value="BARANGAY_UPDATED" {{ request('action') == 'BARANGAY_UPDATED' ? 'selected' : '' }}>BARANGAY_UPDATED</option>
                                 </optgroup>
                             </select>
                         </div>
@@ -136,7 +138,6 @@
                                             <div class="text-muted">
                                                 <i class="bi bi-clipboard-x display-6 d-block mb-2"></i>
                                                 <p class="mb-0">No records found</p>
-                                                <small>No audit logs match your selected filter parameters.</small>
                                             </div>
                                         </td>
                                     </tr>

@@ -8,11 +8,16 @@
             <!-- Print Action Bar (Hidden when printing) -->
             <div class="d-flex justify-content-between align-items-center mb-3 d-print-none">
                 <a href="{{ route('settings.edit') }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-arrow-left me-1"></i> Back to Global Settings
+                    <i class="bi bi-arrow-left me-1"></i> Back
                 </a>
-                <button onclick="window.print()" class="btn btn-primary btn-sm px-4">
-                    <i class="bi bi-printer me-1"></i> Print Certificate
-                </button>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('templates.body', $type) }}" class="btn btn-outline-primary btn-sm px-3" title="Edit certificate body">
+                        <i class="bi bi-pencil-square me-1"></i> Edit
+                    </a>
+                    <button onclick="window.print()" class="btn btn-primary btn-sm px-3" title="Print">
+                        <i class="bi bi-printer me-1"></i> Print
+                    </button>
+                </div>
             </div>
 
             <!-- A4 Bond Paper Preview Container -->
@@ -112,6 +117,12 @@
                             display: none !important;
                         }
                     }
+                
+                    /* Editable certificate body */
+                    .tpl-body p { text-indent: 45px; margin-bottom: 12px; text-align: justify; }
+                    .tpl-body p:last-child { margin-bottom: .5rem; }
+                    .tpl-body ul.tpl-list { list-style: none; padding-left: 40px; text-align: justify; margin-bottom: 8px; }
+                    .tpl-body ul.tpl-list li { margin-bottom: 2px; }
                 </style>
 
                 <!-- Header Section -->
@@ -125,10 +136,9 @@
                     </div>
                     
                     <div class="header-text">
-                        <span>REPUBLIC OF THE PHILIPPINES</span><br>
-                        <span>PROVINCE OF ISABELA</span><br>
-                        <span>MUNICIPALITY OF MALLIG</span><br>
-                        <span>BARANGAY OF SIEMPRE VIVA SUR</span>
+                        @foreach($settings->header_lines_list as $line)
+                        <span>{{ $line }}</span>@if(!$loop->last)<br>@endif
+                        @endforeach
                     </div>
 
                     <div style="width: 75px; height: 75px; flex-shrink: 0;">
@@ -141,35 +151,16 @@
                 </div>
 
                 <hr style="border-top: 2px solid #000; opacity: 1;" class="my-1">
-                <div class="office-text">Office of the Punong Barangay</div>
+                <div class="office-text">{{ $settings->header_office }}</div>
 
                 <!-- Oath Title -->
                 <div class="cert-title-container">
-                    <h1 class="cert-main-title">OATH OF UNDERTAKING</h1>
+                    <h1 class="cert-main-title">{{ $template->title }}</h1>
                     <div class="cert-subtitle">Republic Act 11261-First Time Job Seekers Assistance Act</div>
                 </div>
 
                 <!-- Document Content (9 Declarations) -->
-                <div class="content-text">
-                    <p class="mb-2" style="text-indent: 40px; text-align: justify;">
-                        <strong>I, [SAMPLE APPLICANT NAME]</strong>, [AGE] years of age, resident of Barangay Siempre Viva Sur, Mallig, Isabela, availing the benefit of Republic Act <strong>11261</strong>, otherwise known as the <strong>First Time Jobseekers Act of 2019</strong>, agree and undertake to abide and be bound by the following;
-                    </p>
-
-                    <ul style="list-style: none; padding-left: 40px; text-align: justify;">
-                        <li><strong>1.</strong> That is the first time that I will actively take a job and therefore request that the Barangay Certification be issued in my favor to avail the benefit of the law;</li>
-                        <li><strong>2.</strong> That I am aware that the benefit and privilege/s under the said law shall be valid only for one (1) year from the date that the Barangay Certification is issued;</li>
-                        <li><strong>3.</strong> That I can avail myself of the benefits of the law only once;</li>
-                        <li><strong>4.</strong> That I understand that my personal information shall be included in the Roster/List of the First Time Jobseekers and not be used for any unlawful purpose; means, or through my family/relatives once I get employed;</li>
-                        <li><strong>5.</strong> That I will inform and/or report to the Barangay personally, through text or other options, that I am not a beneficiary of the Job Start Program under RA No. 10869 and other laws that give similar exemptions for the documents and other transactions exempted under RA No. 11261;</li>
-                        <li><strong>6.</strong> That if issued the requested Certification, I will not use the same in any fraud, nor falsify nor help and/or assist in the fabrication of the said certification;</li>
-                        <li><strong>7.</strong> That this undertaking is made solely for the purpose of obtaining a barangay Certification consistent with the objective of RA No. 11261, and/or not for any other purpose;</li>
-                        <li><strong>8.</strong> That I consent to the use of my personal information pursuant to the Data Privacy Act and other applicable laws, rules, and regulations; and</li>
-                        <li><strong>9.</strong> That I consent to the use of my personal information pursuant to the Data Privacy Act and other applicable laws, rules, and regulations.</li>
-                    </ul>
-
-                    <p class="mt-2" style="text-indent: 40px; text-align: justify;">
-                        Signed this [DAY] day of [MONTH] [YEAR], at Barangay Siempre Viva Sur, Mallig, Isabela.
-                    </p>
+                <div class="content-text">                    <div class="tpl-body">{!! $bodyHtml !!}</div>
                 </div>
 
                 <!-- Combined Horizontal Signatures Section (No Underline) -->
@@ -203,9 +194,9 @@
                         @endif
                     </div>
                     <div>
-                        <span class="d-block" style="font-size: 8.5pt; letter-spacing: 0.5px;">SCAN FOR MORE INFO. OR EMAIL</span>
-                        <span class="fw-bold d-block text-muted" style="font-size: 8.5pt;">Brgy. Siempre Viva Sur, Mallig, Isabela</span>
-                        <span class="text-primary" style="font-size: 8.5pt;">siemprevivasurbarangay@gmail.com</span>
+                        <span class="d-block" style="font-size: 8.5pt; letter-spacing: 0.5px;">{{ $settings->footer_label }}</span>
+                        <span class="fw-bold d-block text-muted" style="font-size: 8.5pt;">{{ $settings->footer_address }}</span>
+                        @if($settings->footer_email)<span class="text-primary" style="font-size: 8.5pt;">{{ $settings->footer_email }}</span>@endif
                     </div>
                 </div>
 

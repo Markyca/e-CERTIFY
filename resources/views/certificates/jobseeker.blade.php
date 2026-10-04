@@ -8,11 +8,16 @@
             <!-- Print Action Bar (Hidden when printing) -->
             <div class="d-flex justify-content-between align-items-center mb-3 d-print-none">
                 <a href="{{ route('settings.edit') }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-arrow-left me-1"></i> Back to Global Settings
+                    <i class="bi bi-arrow-left me-1"></i> Back
                 </a>
-                <button onclick="window.print()" class="btn btn-primary btn-sm px-4">
-                    <i class="bi bi-printer me-1"></i> Print Certificate
-                </button>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('templates.body', $type) }}" class="btn btn-outline-primary btn-sm px-3" title="Edit certificate body">
+                        <i class="bi bi-pencil-square me-1"></i> Edit
+                    </a>
+                    <button onclick="window.print()" class="btn btn-primary btn-sm px-3" title="Print">
+                        <i class="bi bi-printer me-1"></i> Print
+                    </button>
+                </div>
             </div>
 
             <!-- A4 Bond Paper Preview Container -->
@@ -115,6 +120,12 @@
                             display: none !important;
                         }
                     }
+                
+                    /* Editable certificate body */
+                    .tpl-body p { text-indent: 45px; margin-bottom: 12px; text-align: justify; }
+                    .tpl-body p:last-child { margin-bottom: 1.5rem; }
+                    .tpl-body ul.tpl-list { list-style: none; padding-left: 40px; text-align: justify; margin-bottom: 8px; }
+                    .tpl-body ul.tpl-list li { margin-bottom: 2px; }
                 </style>
 
                 <!-- Header Section -->
@@ -128,10 +139,9 @@
                     </div>
                     
                     <div class="header-text">
-                        <span>REPUBLIC OF THE PHILIPPINES</span><br>
-                        <span>PROVINCE OF ISABELA</span><br>
-                        <span>MUNICIPALITY OF MALLIG</span><br>
-                        <span>BARANGAY OF SIEMPRE VIVA SUR</span>
+                        @foreach($settings->header_lines_list as $line)
+                        <span>{{ $line }}</span>@if(!$loop->last)<br>@endif
+                        @endforeach
                     </div>
 
                     <div style="width: 85px; height: 85px; flex-shrink: 0;">
@@ -144,29 +154,20 @@
                 </div>
 
                 <hr style="border-top: 2px solid #000; opacity: 1;" class="my-1">
-                <div class="office-text">Office of the Punong Barangay</div>
+                <div class="office-text">{{ $settings->header_office }}</div>
 
                 <!-- Job Seeker Title (No Ribbon) -->
                 <div class="cert-title-container">
-                    <h1 class="cert-main-title">BARANGAY CERTIFICATION</h1>
+                    <h1 class="cert-main-title">{{ $template->title }}</h1>
                     <div class="cert-subtitle">(First-Time Jobseekers Assistance Act - RA 11261)</div>
                 </div>
 
                 <!-- Document Content -->
                 <div class="content-text">
-                    <p class="fw-bold mb-3" style="text-indent: 0 !important;">TO WHOM IT MAY CONCERN:</p>
-                    
-                    <p>
-                        THIS IS TO CERTIFY that <strong>[SAMPLE APPLICANT NAME]</strong>, a resident of Barangay Siempre Viva Sur, Mallig, Isabela, is a qualified applicant under RA 11261 known as the First-Time Job Seekers Act of 2019.
-                    </p>
-
-                    <p>
-                        I further certify that the bearer was informed of her rights, including the duties and responsibilities accorded by RA 11261, through the Oath of Undertaking she has signed and executed in the presence of our Barangay Official.
-                    </p>
-
-                    <p class="mb-4">
-                        Signed this [DAY] day of [MONTH] [YEAR] at Barangay Siempre Viva Sur, Mallig, Isabela.
-                    </p>
+                    @if(!empty($template->salutation))
+                    <p class="fw-bold mb-3" style="text-indent: 0 !important;">{{ $template->salutation }}</p>
+                    @endif
+                    <div class="tpl-body">{!! $bodyHtml !!}</div>
                 </div>
 
                 <!-- Punong Barangay Signatory Block (Digital Signature Off by Default for Jobseeker) -->
@@ -182,8 +183,8 @@
                 <div class="witness-section">
                     <div class="text-left mb-1" style="text-align: left !important;">Witnessed by:</div>
                     <div class="text-center mt-3">
-                        <strong class="d-block text-uppercase ">[WITNESS NAME / SECRETARY]</strong>
-                        <span style="font-size: 11pt;">[Witness Title / Barangay Secretary]</span>
+                        <strong class="d-block text-uppercase ">{{ mb_strtoupper($brgy->witness()['name']) }}</strong>
+                        <span style="font-size: 11pt;">{{ $brgy->witness()['title'] }}</span>
                         <span class="d-block text-muted" style="font-size: 10pt;">[Date]</span>
                     </div>
                 </div>
@@ -198,9 +199,9 @@
                         @endif
                     </div>
                     <div>
-                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">SCAN FOR MORE INFO. OR EMAIL</span>
-                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">Brgy. Siempre Viva Sur, Mallig, Isabela</span>
-                        <span class="text-primary" style="font-size: 9pt;">siemprevivasurbarangay@gmail.com</span>
+                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">{{ $settings->footer_label }}</span>
+                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">{{ $settings->footer_address }}</span>
+                        @if($settings->footer_email)<span class="text-primary" style="font-size: 9pt;">{{ $settings->footer_email }}</span>@endif
                     </div>
                 </div>
 

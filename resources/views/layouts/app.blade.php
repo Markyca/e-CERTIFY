@@ -7,315 +7,143 @@
 
     <title>{{ config('app.name', 'e-CERTIFY') }}</title>
 
-    <!-- Bootstrap 5 CSS & Icons -->
+    <!-- Bootstrap 5 CSS, Icons & Inter font -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- e-CERTIFY theme (white + blue) -->
+    <link rel="stylesheet" href="{{ asset('css/theme.css') }}?v={{ config('app.version') }}">
 
-    <style>
-        body {
-            background-color: #f4f7f6;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-        
-        /* Sidebar Styling & Transition */
-        .sidebar {
-            width: 260px;
-            background: #1e293b; /* Deep slate blue */
-            min-height: 100vh;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-            transition: width 0.3s ease;
-            overflow-x: hidden;
-        }
-        .sidebar .nav-link {
-            color: #cbd5e1;
-            border-radius: 0.375rem;
-            padding: 0.6rem 1rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background-color: rgba(255,255,255,0.1);
-            color: #ffffff;
-        }
-        .sidebar-collapse-menu .nav-link {
-            padding-left: 2.5rem; /* Slightly tighter indent if desired */
-            font-size: 0.9rem;
-            color: #94a3b8;
-            box-sizing: border-box; /* Locks the padding inside the box model */
-            transition: none; /* Disables sudden layout snapping */
-        }
-        
-        .sidebar-collapse-menu .nav-link:hover {
-            color: #ffffff;
-            background: transparent;
-        }
-
-        /* Dropdown Arrow & Layout Stabilization */
-        .sidebar-dropdown-link {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-            width: 100%;
-        }
-
-        .sidebar-dropdown-link .menu-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-grow: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .sidebar-dropdown-link .chevron-icon {
-            flex-shrink: 0;
-            margin-left: 0px;
-            transition: transform 0.2s ease;
-        }
-
-        .custom-line-wrapper {
-            position: relative;
-        }
-
-        .custom-line-wrapper::before {
-            content: '';
-            position: absolute;
-            left: 5px; /* Change this number to push the vertical line left or right independently */
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background-color: #64748b; /* Secondary border color */
-        }
-
-        /* Slim / Collapsed Sidebar State */
-        body.sidebar-collapsed .sidebar {
-            width: 75px !important;
-        }
-        body.sidebar-collapsed .sidebar .sidebar-text,
-        body.sidebar-collapsed .sidebar .sidebar-category,
-        body.sidebar-collapsed .sidebar hr,
-        body.sidebar-collapsed .sidebar #certificatesMenu,
-        body.sidebar-collapsed .sidebar .chevron-icon {
-            display: none !important;
-        }
-        
-        /* Perfect Icon Centering in Slim Mode */
-        body.sidebar-collapsed .sidebar .nav-link {
-            text-align: center !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-        }
-        body.sidebar-collapsed .sidebar .nav-link i {
-            margin-right: 0 !important;
-            font-size: 1.3rem;
-        }
-        body.sidebar-collapsed .sidebar .sidebar-dropdown-link .menu-title {
-            justify-content: center !important;
-        }
-        body.sidebar-collapsed .sidebar .d-flex.align-items-center i {
-            margin-right: 0 !important;
-            font-size: 1.4rem !important;
-            margin-left: 2px; /* increase this to push further right, decrease/negative to pull left */
-        }
-        
-        /* Main Layout */
-        .main-wrapper {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        .top-navbar {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        /* Custom highlight box area for sub-menu items */
-        .sub-menu-highlight {
-            padding-top: 4px !important;
-            padding-bottom: 4px !important;
-            padding-left: 10px !important; /* Together with the margin below, totals 2.5rem — matching the un-highlighted indent so text/icon position doesn't shift */
-            padding-right: 12px !important;
-            margin-left: 30px;      /* Background box starts here, clearing the vertical guide line, without moving the text */
-            display: inline-block; /* Keeps the highlight tightly wrapped around the text instead of stretching 100% full-width */
-            width: auto;           /* Prevents the highlight box from spanning the entire sidebar width */
-        }
-    </style>
-
+    <!-- Apply the saved sidebar state before first paint (no flicker) -->
+    <script>
+        try { if (localStorage.getItem('sidebarState') === 'collapsed') document.documentElement.classList.add('sidebar-collapsed'); } catch (e) {}
+    </script>
 </head>
 <body>
     <div id="app" class="d-flex min-vh-100">
-        
-       <!-- Sidebar (Only visible to logged-in users) -->
+
         @auth
-        <aside class="sidebar d-none d-md-flex flex-column p-3 text-white position-sticky top-0 h-100 d-print-none">
-            <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none px-2">
-                <i class="bi bi-shield-check fs-3 text-primary me-2"></i>
-                <div class="sidebar-text">
-                    <span class="fs-5 fw-bold d-block lh-1">e-CERTIFY</span>
-                    <span class="small text-white-50" style="font-size: 0.75rem;">Siempre Viva Sur</span>
-                </div>
+        @php
+            $navUser    = auth()->user();
+            $isAdmin    = $navUser->role === 'Admin';
+            $isStaffUp  = in_array($navUser->role, ['Admin', 'Secretary']);
+            $onCertMenu = request()->routeIs('templates.*') || request()->routeIs('settings.edit');
+            $tplActive  = fn ($t) => request()->routeIs('templates.*') && request()->route('type') === $t;
+            $onResidents = request()->routeIs('residents.*') || request()->routeIs('certificates.create') || request()->routeIs('certificates.show');
+        @endphp
+
+        <!-- Mobile menu button (the top bar no longer exists) -->
+        <button type="button" class="mobile-menu-btn d-print-none" id="mobileMenuBtn" aria-label="Open menu"><i class="bi bi-list"></i></button>
+        <div class="sb-backdrop d-print-none" id="sbBackdrop"></div>
+
+        <aside class="sidebar d-print-none" id="appSidebar">
+
+            <!-- Brand + collapse / expand button -->
+            <div class="sb-brand">
+                <a href="{{ route('dashboard') }}" class="sb-logo" title="e-CERTIFY">
+                    <span class="sb-logo-mark"><i class="bi bi-patch-check-fill"></i></span>
+                    <span class="sb-logo-text">
+                        <strong>e-CERTIFY</strong>
+                        <small>{{ $brgy->identity()['barangay'] }}</small>
+                    </span>
+                </a>
+                <button type="button" class="sb-toggle" id="sidebarToggle" title="Collapse / expand sidebar" aria-label="Collapse or expand sidebar">
+                    <i class="bi bi-chevron-double-left when-expanded"></i>
+                    <i class="bi bi-chevron-double-right when-collapsed"></i>
+                </button>
             </div>
-            <hr class="border-secondary">
-            
-            <ul class="nav nav-pills flex-column mb-auto gap-1">
-                
-                <!-- MAIN MENU SECTION -->
-                <li class="nav-item px-3 mb-1 mt-2 sidebar-category">
-                    <span class="text-uppercase text-white-50 fw-bold" style="font-size: 0.65rem; letter-spacing: 0.08rem;">Main Menu</span>
-                </li>
 
-                <!-- Dashboard -->
-                <li class="nav-item">
-                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" title="Dashboard">
-                        <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Dashboard</span>
-                    </a>
-                </li>
-                
-                <!-- Resident Master File -->
-                <li>
-                    <a href="{{ route('residents.index') }}" class="nav-link {{ request()->routeIs('residents.*') ? 'active' : '' }}" title="Resident Master File">
-                        <i class="bi bi-people-fill me-2"></i> <span class="sidebar-text">Resident Master File</span>
-                    </a>
-                </li>
-                
-                <!-- Document History -->
-                <li class="nav-item">
-                    <a href="{{ route('certificates.history') }}" class="nav-link {{ request()->routeIs('certificates.history') ? 'active' : '' }}" title="Document History">
-                        <i class="bi bi-clock-history me-2"></i> <span class="sidebar-text">Document History</span>
-                    </a>
-                </li>
+            <nav class="sb-nav">
+                <div class="sb-label">Menu</div>
 
-                @if(auth()->check() && in_array(auth()->user()->role, ['Admin', 'Secretary']))
-                <!-- Certificate Templates & Global Settings Manager -->
-                <li>
-                    <a href="#certificatesMenu" 
-                    data-bs-toggle="collapse" 
-                    class="nav-link sidebar-dropdown-link {{ (request()->routeIs('templates.edit') || request()->routeIs('settings.edit')) ? '' : 'collapsed' }}" 
-                    aria-expanded="{{ (request()->routeIs('templates.edit') || request()->routeIs('settings.edit')) ? 'true' : 'false' }}"
-                    title="View Certificates">
-                        <span class="menu-title">
-                            <i class="bi bi-file-earmark-richtext"></i> 
-                            <span class="sidebar-text">View Certificates</span>
-                        </span>
-                        <i id="chevronIcon" class="bi bi-chevron-down chevron-icon sidebar-text"></i>
+                <a href="{{ route('dashboard') }}" data-nav-key="dashboard" @if(request()->routeIs('dashboard')) data-current="1" @endif
+                   class="sb-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" title="Dashboard">
+                    <i class="bi bi-grid-1x2-fill sb-icon"></i><span>Dashboard</span>
+                </a>
+
+                <a href="{{ route('residents.index') }}" data-nav-key="residents" @if($onResidents) data-current="1" @endif
+                   class="sb-link {{ $onResidents ? 'active' : '' }}" title="Residents">
+                    <i class="bi bi-people-fill sb-icon"></i><span>Residents</span>
+                </a>
+
+                <a href="{{ route('certificates.history') }}" data-nav-key="history" @if(request()->routeIs('certificates.history*')) data-current="1" @endif
+                   class="sb-link {{ request()->routeIs('certificates.history*') ? 'active' : '' }}" title="History">
+                    <i class="bi bi-clock-history sb-icon"></i><span>History</span>
+                </a>
+
+                @if($isStaffUp)
+                    <a href="#certificatesMenu" data-bs-toggle="collapse" data-nav-group="certificates"
+                       class="sb-link sb-group {{ $onCertMenu ? '' : 'collapsed' }}" aria-expanded="{{ $onCertMenu ? 'true' : 'false' }}" title="Certificates">
+                        <i class="bi bi-file-earmark-richtext-fill sb-icon"></i><span>Certificates</span>
+                        <i class="bi bi-chevron-down chevron"></i>
                     </a>
-                    
-                    <div class="collapse sidebar-collapse-menu {{ (request()->routeIs('templates.edit') || request()->routeIs('settings.edit')) ? 'show' : '' }}" id="certificatesMenu">
-                        <div class="custom-line-wrapper ms-3 ps-2">
-                            <ul class="nav flex-column mt-1 ps-1" style="margin-left: -35px;">
-                                <li>
-                                    <a href="{{ route('templates.edit', 'clearance') }}" class="nav-link py-1 small {{ request()->route('type') === 'clearance' ? 'text-white fw-bold bg-secondary bg-opacity-25 rounded sub-menu-highlight' : 'text-white-50' }}">
-                                        <i class="bi bi-file-text me-1"></i> Barangay Clearance
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('templates.edit', 'residency') }}" class="nav-link py-1 small {{ request()->route('type') === 'residency' ? 'text-white fw-bold bg-secondary bg-opacity-25 rounded sub-menu-highlight' : 'text-white-50' }}">
-                                        <i class="bi bi-file-text me-1"></i> Certificate of Residency
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('templates.edit', 'indigency') }}" class="nav-link py-1 small {{ request()->route('type') === 'indigency' ? 'text-white fw-bold bg-secondary bg-opacity-25 rounded sub-menu-highlight' : 'text-white-50' }}">
-                                        <i class="bi bi-file-text me-1"></i> Certificate of Indigency
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('templates.edit', 'jobseeker') }}" class="nav-link py-1 small {{ request()->route('type') === 'jobseeker' ? 'text-white fw-bold bg-secondary bg-opacity-25 rounded sub-menu-highlight' : 'text-white-50' }}">
-                                        <i class="bi bi-file-text me-1"></i> First Time Job Seeker
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('templates.edit', 'oath') }}" class="nav-link py-1 small {{ request()->route('type') === 'oath' ? 'text-white fw-bold bg-secondary bg-opacity-25 rounded sub-menu-highlight' : 'text-white-50' }}">
-                                        <i class="bi bi-file-text me-1"></i> Oath of Undertaking
-                                    </a>
-                                </li>
-                                <!-- Dedicated Global Assets & Captain Settings Link -->
-                                <li>
-                                    <a href="{{ route('settings.edit') }}" class="nav-link py-1 small {{ request()->routeIs('settings.edit') ? 'text-white fw-bold bg-secondary bg-opacity-25 rounded sub-menu-highlight' : 'text-white-50' }}">
-                                        <i class="bi bi-sliders me-1"></i> Settings & Assets
-                                    </a>
-                                </li>
-                            </ul>
+                    <div class="collapse {{ $onCertMenu ? 'show' : '' }}" id="certificatesMenu">
+                        <div class="sb-sub">
+                            @foreach(['clearance' => 'Barangay Clearance', 'residency' => 'Residency', 'indigency' => 'Indigency', 'jobseeker' => 'First Time Job Seeker', 'oath' => 'Oath of Undertaking'] as $key => $label)
+                                <a href="{{ route('templates.edit', $key) }}" data-nav-key="tpl-{{ $key }}" data-nav-parent="certificates" @if($tplActive($key)) data-current="1" @endif
+                                   class="sb-link {{ $tplActive($key) ? 'active' : '' }}" title="{{ $label }}">
+                                    <i class="bi bi-file-earmark-text sb-icon"></i><span>{{ $label }}</span>
+                                </a>
+                            @endforeach
+                            <a href="{{ route('settings.edit') }}" data-nav-key="settings" data-nav-parent="certificates" @if(request()->routeIs('settings.edit')) data-current="1" @endif
+                               class="sb-link {{ request()->routeIs('settings.edit') ? 'active' : '' }}" title="Settings & Assets">
+                                <i class="bi bi-sliders sb-icon"></i><span>Settings & Assets</span>
+                            </a>
                         </div>
                     </div>
-                </li>
                 @endif
-                
-                @if(auth()->check() && auth()->user()->role === 'Admin')
-                    <!-- ADMINISTRATION SECTION -->
-                    <li class="nav-item px-3 mb-1 mt-4 sidebar-category">
-                        <span class="text-uppercase text-white-50 fw-bold" style="font-size: 0.65rem; letter-spacing: 0.08rem;">Administration</span>
-                    </li>
 
-                    <!-- System Logs -->
-                    <li>
-                        <a href="{{ route('logs.index') }}" class="nav-link {{ request()->routeIs('logs.*') ? 'active' : '' }}" title="System Logs">
-                            <i class="bi bi-journal-text me-2"></i> <span class="sidebar-text">System Logs</span>
-                        </a>
-                    </li>
-                
-                    <!-- User Management -->
-                    <li>
-                        <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" title="User Management">
-                            <i class="bi bi-person-gear me-2"></i> <span class="sidebar-text">User Management</span>
-                        </a>
-                    </li>
+                @if($isAdmin)
+                    <div class="sb-label">Admin</div>
+
+                    <a href="{{ route('logs.index') }}" data-nav-key="logs" @if(request()->routeIs('logs.*')) data-current="1" @endif
+                       class="sb-link {{ request()->routeIs('logs.*') ? 'active' : '' }}" title="System Logs">
+                        <i class="bi bi-journal-text sb-icon"></i><span>System Logs</span>
+                    </a>
+
+                    <a href="{{ route('barangay.edit') }}" data-nav-key="barangay" @if(request()->routeIs('barangay.*')) data-current="1" @endif
+                       class="sb-link {{ request()->routeIs('barangay.*') ? 'active' : '' }}" title="Barangay">
+                        <i class="bi bi-geo-alt-fill sb-icon"></i><span>Barangay</span>
+                    </a>
+
+                    <a href="{{ route('users.index') }}" data-nav-key="users" @if(request()->routeIs('users.*')) data-current="1" @endif
+                       class="sb-link {{ request()->routeIs('users.*') ? 'active' : '' }}" title="Users">
+                        <i class="bi bi-person-gear sb-icon"></i><span>Users</span>
+                    </a>
                 @endif
-            </ul>
+            </nav>
+
+            <!-- Bottom-left: profile, logout and version, grouped -->
+            <div class="sb-user">
+                <div class="sb-user-row">
+                    <span class="sb-avatar" title="{{ $navUser->name }}">{{ strtoupper(mb_substr($navUser->name, 0, 1)) }}</span>
+                    <span class="sb-user-meta">
+                        <strong>{{ $navUser->name }}</strong>
+                        <small>{{ $navUser->role }}</small>
+                    </span>
+                    <form method="POST" action="{{ route('logout') }}" class="m-0">
+                        @csrf
+                        <button type="submit" class="sb-logout" title="Log out" aria-label="Log out"><i class="bi bi-box-arrow-right"></i></button>
+                    </form>
+                </div>
+                <div class="sb-version" title="Software version">v{{ config('app.version') }}</div>
+            </div>
         </aside>
         @endauth
 
         <!-- Main Content Area -->
-        <div class="main-wrapper bg-light">
-            
-            <!-- Top Navbar (Only visible when authenticated) -->
-            @auth
-            <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top d-print-none top-navbar">
-                <div class="container-fluid px-4">
-                    
-                    <!-- Left Side: Sidebar Slim Toggle Button -->
-                    <button class="btn btn-outline-secondary btn-sm border-0 me-2" id="sidebarToggle" type="button" title="Toggle Sidebar Width">
-                        <i class="bi bi-list fs-5"></i>
-                    </button>
+        <div class="main-wrapper">
 
-                    <!-- Right Side Dropdown -->
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle fw-semibold text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                <i class="bi bi-person-circle fs-5 align-middle me-1 text-primary"></i> 
-                                {{ Auth::user()->name }}
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-end border-0 shadow-sm mt-2" aria-labelledby="navbarDropdown">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <a href="{{ route('logout') }}" 
-                                    class="dropdown-item text-danger fw-semibold" 
-                                    onclick="event.preventDefault(); this.closest('form').submit();">
-                                        <i class="bi bi-box-arrow-right me-2"></i> Secure Logout
-                                    </a>
-                                </form>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-            @endauth
-            
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show mx-4 mt-3" role="alert">
+                <div class="alert alert-success alert-dismissible fade show mx-4 mt-3 d-print-none" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show mx-4 mt-3" role="alert">
+                <div class="alert alert-danger alert-dismissible fade show mx-4 mt-3 d-print-none" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -326,12 +154,8 @@
                 @yield('content')
             </main>
 
-            <!-- Footer -->
-            <footer class="bg-white text-center py-3 border-top mt-auto d-print-none">
-                <div class="container-fluid small text-muted">
-                    &copy; {{ date('Y') }} Barangay Siempre Viva Sur Certificate Issuance System. <br>
-                    System Developed by <span class="fw-semibold text-primary">Mark Indayon</span>.
-                </div>
+            <footer class="app-footer d-print-none mt-auto">
+                &copy; {{ date('Y') }} Brgy. {{ $brgy->identity()['barangay'] }} &middot; by <b>Mark Indayon</b>
             </footer>
         </div>
     </div>
@@ -340,41 +164,85 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Sidebar Chevron Rotation
-            const menu = document.getElementById('certificatesMenu');
-            const chevron = document.getElementById('chevronIcon');
-
-            if (menu && chevron) {
-                menu.addEventListener('show.bs.collapse', function () {
-                    chevron.classList.remove('bi-chevron-down');
-                    chevron.classList.add('bi-chevron-up');
-                });
-
-                menu.addEventListener('hide.bs.collapse', function () {
-                    chevron.classList.remove('bi-chevron-up');
-                    chevron.classList.add('bi-chevron-down');
-                });
-            }
-
-            // Sidebar Slim Toggle Functionality with LocalStorage Memory
-            const sidebarToggle = document.getElementById('sidebarToggle');
+        document.addEventListener('DOMContentLoaded', function () {
+            const root = document.documentElement;
             const body = document.body;
 
-            if (localStorage.getItem('sidebarState') === 'collapsed') {
-                body.classList.add('sidebar-collapsed');
-            }
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function () {
-                    body.classList.toggle('sidebar-collapsed');
-                    if (body.classList.contains('sidebar-collapsed')) {
-                        localStorage.setItem('sidebarState', 'collapsed');
-                    } else {
-                        localStorage.setItem('sidebarState', 'expanded');
-                    }
+            // ---- Collapse / expand sidebar (remembered) ----
+            const toggle = document.getElementById('sidebarToggle');
+            if (toggle) {
+                toggle.addEventListener('click', function () {
+                    root.classList.toggle('sidebar-collapsed');
+                    try { localStorage.setItem('sidebarState', root.classList.contains('sidebar-collapsed') ? 'collapsed' : 'expanded'); } catch (e) {}
                 });
             }
+            // Enable animations only after first paint
+            requestAnimationFrame(function () { body.classList.add('sb-ready'); });
+
+            // ---- Show / hide password (every password box gets an eye button) ----
+            document.querySelectorAll('input[type="password"]').forEach(function (input) {
+                const host = input.parentElement;
+                if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'pw-eye';
+                btn.setAttribute('aria-label', 'Show password');
+                btn.setAttribute('title', 'Show password');
+                btn.innerHTML = '<i class="bi bi-eye"></i>';
+                host.appendChild(btn);
+                input.classList.add('has-eye');
+
+                const place = function () { btn.style.top = (input.offsetTop + input.offsetHeight / 2) + 'px'; };
+                place();
+                window.addEventListener('resize', place);
+                window.addEventListener('load', place);
+
+                btn.addEventListener('click', function () {
+                    const reveal = input.type === 'password';
+                    input.type = reveal ? 'text' : 'password';
+                    btn.firstElementChild.className = reveal ? 'bi bi-eye-slash' : 'bi bi-eye';
+                    const label = reveal ? 'Hide password' : 'Show password';
+                    btn.setAttribute('aria-label', label);
+                    btn.setAttribute('title', label);
+                    place();
+                    input.focus();
+                });
+            });
+
+            // ---- Tooltips (used for the small info icons) ----
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) { new bootstrap.Tooltip(el); });
+
+            // ---- Mobile drawer ----
+            const openBtn = document.getElementById('mobileMenuBtn');
+            const backdrop = document.getElementById('sbBackdrop');
+            if (openBtn) openBtn.addEventListener('click', function () { body.classList.add('sidebar-open'); });
+            if (backdrop) backdrop.addEventListener('click', function () { body.classList.remove('sidebar-open'); });
+
+            // ---- Remember the last visited menu item (per user) ----
+            @auth
+            const storeKey = 'ec.lastNav.{{ auth()->id() }}';
+            const current = document.querySelector('.sb-nav [data-nav-key][data-current="1"]');
+
+            if (current && current.dataset.navKey !== 'dashboard') {
+                // Any page other than the dashboard: remember where the user is
+                try { localStorage.setItem(storeKey, current.dataset.navKey); } catch (e) {}
+            } else if (current && current.dataset.navKey === 'dashboard') {
+                // Back on the dashboard: highlight the item they used last
+                let last = null;
+                try { last = localStorage.getItem(storeKey); } catch (e) {}
+                const el = last ? document.querySelector('.sb-nav [data-nav-key="' + last + '"]') : null;
+                if (el) {
+                    el.classList.add('is-last');
+                    el.setAttribute('title', (el.getAttribute('title') || '') + ' · last visited');
+                    const parent = el.dataset.navParent;
+                    if (parent) {
+                        const panel = document.getElementById('certificatesMenu');
+                        if (panel && window.bootstrap) bootstrap.Collapse.getOrCreateInstance(panel, { toggle: false }).show();
+                    }
+                }
+            }
+            @endauth
         });
     </script>
 </body>

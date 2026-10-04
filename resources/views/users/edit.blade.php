@@ -6,8 +6,7 @@
         <div class="col-md-8">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
-                    <h5 class="fw-bold text-primary mb-0">Edit User: {{ $user->name }}</h5>
-                    <p class="text-muted small">Update account details or change their system role.</p>
+                    <h5 class="fw-bold text-primary mb-0 d-flex align-items-center gap-2">Edit User: {{ $user->name }} <span class="hint fs-6" data-bs-toggle="tooltip" title="Update account details or change their system role."><i class="bi bi-info-circle"></i></span></h5>
                 </div>
                 <div class="card-body px-4 pb-4">
                     
@@ -37,9 +36,7 @@
                             @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="alert alert-info py-2 small">
-                            <i class="bi bi-info-circle me-1"></i> Leave password fields blank if you do not wish to change the user's password.
-                        </div>
+                        <div class="small text-muted mb-3"><i class="bi bi-key me-1 text-primary"></i> Password <span class="hint" data-bs-toggle="tooltip" title="Leave blank to keep the current password."><i class="bi bi-info-circle"></i></span></div>
 
                         <div class="row mb-4">
                             <div class="col-md-6">

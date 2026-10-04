@@ -8,8 +8,7 @@
             <!-- Page Header -->
             <div class="d-flex justify-content-between align-items-end mb-4">
                 <div>
-                    <h3 class="fw-bold text-dark mb-1">Document History</h3>
-                    <p class="text-muted small mb-0">Track and filter all certificates issued by the barangay.</p>
+                    <h3 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">History <span class="hint fs-6" data-bs-toggle="tooltip" title="Track and filter all certificates issued by the barangay."><i class="bi bi-info-circle"></i></span></h3>
                 </div>
                 <div>
                     <a href="{{ route('certificates.history.print', request()->all()) }}" class="btn btn-outline-secondary shadow-sm btn-sm" target="_blank">
@@ -118,7 +117,6 @@
                                         <td colspan="5" class="text-center py-5 text-muted">
                                             <i class="bi bi-file-earmark-x fs-1 d-block mb-3 text-black-50"></i>
                                             <h6 class="fw-semibold text-dark">No records found</h6>
-                                            <p class="small">Try adjusting your filters or clear them to see all records.</p>
                                         </td>
                                     </tr>
                                 @endforelse

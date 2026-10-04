@@ -23,6 +23,10 @@
         height: 100%;
         background: url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="%23ffffff" fill-opacity="0.05" fill-rule="evenodd"/%3E%3C/svg%3E');
     }
+    .brand-version {
+        position: absolute; left: 0; right: 0; bottom: 1.25rem; text-align: center;
+        font-size: .78rem; font-weight: 600; letter-spacing: .1em; color: rgba(255, 255, 255, .75);
+    }
     .logo-placeholder {
         width: 75px; 
         height: 75px; 
@@ -75,9 +79,12 @@
                         <h6 class="mb-4 text-white-50 z-1 text-uppercase tracking-wide">Certificate Issuance System</h6>
                         
                         <p class="small mb-0 z-1 fw-light border-top border-light pt-3 mt-3 w-75">
-                            Barangay Siempre Viva Sur<br>
+                            Barangay {{ $brgy->identity()['barangay'] }}<br>
                             <span class="opacity-75">Official Portal</span>
                         </p>
+
+                        <!-- Version, bottom centre of the card -->
+                        <div class="brand-version z-1">v{{ config('app.version') }}</div>
                     </div>
 
                     <!-- Right Side: Login Form -->
@@ -86,7 +93,8 @@
                         <!-- Mobile Branding (Visible only on small screens) -->
                         <div class="d-md-none text-center mb-4">
                             <h3 class="fw-bold text-primary mb-0">e-CERTIFY</h3>
-                            <p class="small text-muted">Brgy. Siempre Viva Sur</p>
+                            <p class="small text-muted mb-1">Brgy. {{ $brgy->identity()['barangay'] }}</p>
+                            <span class="badge bg-primary bg-opacity-10">v{{ config('app.version') }}</span>
                         </div>
 
                         <div class="mb-4">
@@ -98,7 +106,7 @@
                             @csrf
 
                             <div class="form-floating mb-3">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="name@example.com">
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="off" placeholder="name@example.com">
                                 <label for="email" class="text-muted">Email Address</label>
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -108,7 +116,7 @@
                             </div>
 
                             <div class="form-floating mb-3">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Password">
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" placeholder="Password">
                                 <label for="password" class="text-muted">Password</label>
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
@@ -151,4 +159,56 @@
         </div>
     </div>
 </div>
+<script>
+    // "Remember Me": the saved email (and the browser's saved password) only appear
+    // when Remember Me is ticked. Unticked => the boxes start empty.
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form[action="{{ route('login') }}"]');
+        const email = document.getElementById('email');
+        const pass = document.getElementById('password');
+        const remember = document.getElementById('remember');
+        const KEY = 'ec.remembered.email';
+
+        const read = () => { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
+        const write = (v) => { try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch (e) {} };
+
+        // Came back after a failed login? Keep exactly what the server sent back.
+        const returned = email.value !== '';
+        const saved = read();
+        if (!returned && saved) {
+            email.value = saved;
+            remember.checked = true;
+        }
+
+        function applyMode() {
+            const on = remember.checked;
+            // Allow browser autofill only when remembering; otherwise ask it to stay out
+            email.setAttribute('autocomplete', on ? 'username' : 'off');
+            pass.setAttribute('autocomplete', on ? 'current-password' : 'new-password');
+            // Read-only until touched stops browsers from pre-filling when not remembering
+            [email, pass].forEach(function (el) {
+                if (on) { el.removeAttribute('readonly'); return; }
+                if (el.value === '') {
+                    el.setAttribute('readonly', 'readonly');
+                    const free = function () { el.removeAttribute('readonly'); };
+                    el.addEventListener('focus', free, { once: true });
+                    el.addEventListener('pointerdown', free, { once: true });
+                }
+            });
+        }
+
+        remember.addEventListener('change', function () {
+            if (!remember.checked) { write(null); }
+            applyMode();
+        });
+
+        form.addEventListener('submit', function () {
+            // Remember the email only when asked to; always forget it otherwise
+            write(remember.checked ? email.value.trim() : null);
+        });
+
+        applyMode();
+        if (!email.hasAttribute('readonly')) email.focus();
+    });
+</script>
 @endsection

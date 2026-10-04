@@ -8,11 +8,16 @@
             <!-- Print Action Bar (Hidden when printing) -->
             <div class="d-flex justify-content-between align-items-center mb-3 d-print-none">
                 <a href="{{ route('settings.edit') }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-arrow-left me-1"></i> Back to Global Settings
+                    <i class="bi bi-arrow-left me-1"></i> Back
                 </a>
-                <button onclick="window.print()" class="btn btn-primary btn-sm px-4">
-                    <i class="bi bi-printer me-1"></i> Print Certificate
-                </button>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('templates.body', $type) }}" class="btn btn-outline-primary btn-sm px-3" title="Edit certificate body">
+                        <i class="bi bi-pencil-square me-1"></i> Edit
+                    </a>
+                    <button onclick="window.print()" class="btn btn-primary btn-sm px-3" title="Print">
+                        <i class="bi bi-printer me-1"></i> Print
+                    </button>
+                </div>
             </div>
 
             <!-- A4 Bond Paper Preview Container -->
@@ -115,6 +120,12 @@
                             display: none !important;
                         }
                     }
+                
+                    /* Editable certificate body */
+                    .tpl-body p { text-indent: 45px; margin-bottom: 12px; text-align: justify; }
+                    .tpl-body p:last-child { margin-bottom: 4rem; }
+                    .tpl-body ul.tpl-list { list-style: none; padding-left: 40px; text-align: justify; margin-bottom: 8px; }
+                    .tpl-body ul.tpl-list li { margin-bottom: 2px; }
                 </style>
 
                 <!-- Header Section with Tighter Centered Spacing -->
@@ -128,10 +139,9 @@
                     </div>
                     
                     <div class="header-text">
-                        <span>REPUBLIC OF THE PHILIPPINES</span><br>
-                        <span>PROVINCE OF ISABELA</span><br>
-                        <span>MUNICIPALITY OF MALLIG</span><br>
-                        <span>BARANGAY OF SIEMPRE VIVA SUR</span>
+                        @foreach($settings->header_lines_list as $line)
+                        <span>{{ $line }}</span>@if(!$loop->last)<br>@endif
+                        @endforeach
                     </div>
 
                     <div style="width: 85px; height: 85px; flex-shrink: 0;">
@@ -144,29 +154,20 @@
                 </div>
 
                 <hr style="border-top: 2px solid #000; opacity: 1;" class="my-1">
-                <div class="office-text" style="margin-bottom: 2rem;">Office of the Punong Barangay</div>
+                <div class="office-text" style="margin-bottom: 2rem;">{{ $settings->header_office }}</div>
 
                 <!-- Ribbon Banner & Algerian Title -->
                 <div class="ribbon-container" style="margin-bottom: 3rem;">
                     <img src="{{ asset('images/ribbon.jpg') }}" alt="Ribbon Banner" class="ribbon-banner">
-                    <h1 class="ribbon-title">CERTIFICATE OF RESIDENCY</h1>
+                    <h1 class="ribbon-title">{{ $template->title }}</h1>
                 </div>
 
                 <!-- Document Content (Sample Resident Blueprint) -->
                 <div class="content-text">
-                    <p class="fw-bold mb-3" style="text-indent: 0 !important;">TO WHOM IT MAY CONCERN:</p>
-                    
-                    <p>
-                        This is to certify that <strong>[RESIDENT NAME]</strong>,of legal age, [GENDER], [CIVIL STATUS], and a Filipino Citizen. According to the records in this office, the above-named individual is a resident of Purok [PUROK], Siempre Viva Sur, Mallig, Isabela.
-                    </p>
-
-                    <p>
-                        This is issued upon the request of the interested party who needs the foregoing certification for whatever legal purpose it may serve.
-                    </p>
-
-                    <p style="margin-bottom: 4rem;">
-                        Issued this [DAY] day of [MONTH] [YEAR] at Barangay Siempre Viva Sur, Mallig, Isabela.
-                    </p>
+                    @if(!empty($template->salutation))
+                    <p class="fw-bold mb-3" style="text-indent: 0 !important;">{{ $template->salutation }}</p>
+                    @endif
+                    <div class="tpl-body">{!! $bodyHtml !!}</div>
                 </div>
 
                 <!-- Scaled Up Signatory Block & Digital Signature -->
@@ -193,9 +194,9 @@
                         @endif
                     </div>
                     <div>
-                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">SCAN FOR MORE INFO. OR EMAIL</span>
-                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">Brgy. Siempre Viva Sur, Mallig, Isabela</span>
-                        <span class="text-primary" style="font-size: 9pt;">siemprevivasurbarangay@gmail.com</span>
+                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">{{ $settings->footer_label }}</span>
+                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">{{ $settings->footer_address }}</span>
+                        @if($settings->footer_email)<span class="text-primary" style="font-size: 9pt;">{{ $settings->footer_email }}</span>@endif
                     </div>
                 </div>
 

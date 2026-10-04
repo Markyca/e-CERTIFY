@@ -8,8 +8,7 @@
             <!-- Page Header -->
             <div class="d-flex justify-content-between align-items-end mb-4">
                 <div>
-                    <h3 class="fw-bold text-dark mb-1">Archived Residents</h3>
-                    <p class="text-muted small mb-0">Manage and restore previously archived resident profiles.</p>
+                    <h3 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">Archive <span class="hint fs-6" data-bs-toggle="tooltip" title="Manage and restore previously archived resident profiles."><i class="bi bi-info-circle"></i></span></h3>
                 </div>
                 <a href="{{ route('residents.index') }}" class="btn btn-outline-secondary shadow-sm fw-semibold">
                     <i class="bi bi-arrow-left me-1"></i> Back to Active Residents

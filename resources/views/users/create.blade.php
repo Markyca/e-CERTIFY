@@ -6,8 +6,7 @@
         <div class="col-md-8">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
-                    <h5 class="fw-bold text-primary mb-0">Add New User</h5>
-                    <p class="text-muted small">Create an account for a Barangay staff member or administrator.</p>
+                    <h5 class="fw-bold text-primary mb-0 d-flex align-items-center gap-2">Add New User <span class="hint fs-6" data-bs-toggle="tooltip" title="Create an account for a Barangay staff member or administrator."><i class="bi bi-info-circle"></i></span></h5>
                 </div>
                 <div class="card-body px-4 pb-4">
                     

@@ -4,9 +4,10 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    Issue Document for: <strong>{{ $resident->first_name }} {{ $resident->last_name }}</strong>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex align-items-center gap-2">
+                    <span class="stat-dot"><i class="bi bi-file-earmark-plus-fill"></i></span>
+                    <span class="fw-bold fs-5"><strong>{{ $resident->first_name }} {{ $resident->last_name }}</strong></span>
                 </div>
 
                 <div class="card-body">
@@ -45,24 +46,24 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h6 class="text-primary fw-bold m-0"><i class="bi bi-person-badge me-1"></i> First-Time Job Seeker Witness Details</h6>
                                 <button type="button" class="btn btn-sm btn-outline-primary" id="setDefaultWitness">
-                                    <i class="bi bi-check2-circle me-1"></i> Use Default Secretary
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Use Default
                                 </button>
                             </div>
                             
                             <div class="mb-3">
                                 <label for="witness_name" class="form-label">Witness Name *</label>
-                                <input type="text" class="form-control" id="witness_name" name="witness_name" placeholder="e.g., ROSEMARIE M. GALANGAM">
+                                <input type="text" class="form-control" id="witness_name" name="witness_name" value="{{ old('witness_name', $brgy->witness()['name']) }}" placeholder="e.g., JUAN D. DELA CRUZ">
                             </div>
 
                             <div class="mb-3">
                                 <label for="witness_title" class="form-label">Witness Title *</label>
-                                <input type="text" class="form-control" id="witness_title" name="witness_title" placeholder="e.g., Barangay Secretary">
+                                <input type="text" class="form-control" id="witness_title" name="witness_title" value="{{ old('witness_title', $brgy->witness()['title']) }}" placeholder="e.g., Barangay Secretary">
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <a href="{{ route('residents.index') }}" class="btn btn-secondary me-2">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Generate Certificate</button>
+                            <a href="{{ route('residents.index') }}" class="btn btn-outline-secondary me-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i> Generate</button>
                         </div>
                     </form>
                 </div>
@@ -96,8 +97,8 @@
 
         // Default Secretary Quick Fill Button
         defaultBtn.addEventListener('click', function () {
-            witnessNameInput.value = 'ROSEMARIE M. GALANGAM';
-            witnessTitleInput.value = 'Barangay Secretary';
+            witnessNameInput.value = @json($brgy->witness()['name']);
+            witnessTitleInput.value = @json($brgy->witness()['title']);
         });
 
         // Run on load in case of validation redirect

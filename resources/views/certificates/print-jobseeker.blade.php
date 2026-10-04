@@ -45,7 +45,16 @@
                     .a4-page { box-shadow: none !important; margin: 0 !important; page-break-after: always; }
                     .d-print-none { display: none !important; }
                 }
-            </style>
+            
+                    /* Editable certificate body */
+                    .tpl-body p { text-indent: 45px; margin-bottom: 12px; text-align: justify; }
+                    .tpl-body p:last-child { margin-bottom: 4rem; }
+                    .tpl-body ul.tpl-list { list-style: none; padding-left: 40px; text-align: justify; margin-bottom: 8px; }
+                    .tpl-body ul.tpl-list li { margin-bottom: 2px; }
+                    .tpl-cert p:last-child { margin-bottom: 1.5rem; }
+                    .tpl-oath p:last-child { margin-bottom: .5rem; }
+                    .tpl-oath p { text-indent: 40px; margin-bottom: 8px; }
+                </style>
 
             <!-- ================= PAGE 1: FIRST-TIME JOB SEEKER CERTIFICATION ================= -->
             <div class="a4-page">
@@ -60,10 +69,9 @@
                     </div>
                     
                     <div class="header-text">
-                        <span>REPUBLIC OF THE PHILIPPINES</span><br>
-                        <span>PROVINCE OF ISABELA</span><br>
-                        <span>MUNICIPALITY OF MALLIG</span><br>
-                        <span>BARANGAY OF SIEMPRE VIVA SUR</span>
+                        @foreach($settings->header_lines_list as $line)
+                        <span>{{ $line }}</span>@if(!$loop->last)<br>@endif
+                        @endforeach
                     </div>
 
                     <div style="width: 85px; height: 85px; flex-shrink: 0;">
@@ -76,29 +84,20 @@
                 </div>
 
                 <hr style="border-top: 2px solid #000; opacity: 1;" class="my-1">
-                <div class="office-text">Office of the Punong Barangay</div>
+                <div class="office-text">{{ $settings->header_office }}</div>
 
                 <!-- Job Seeker Title -->
                 <div style="text-align: center; margin: 15px 0 25px 0;">
-                    <h1 class="cert-main-title">BARANGAY CERTIFICATION</h1>
+                    <h1 class="cert-main-title">{{ $certTemplate->title }}</h1>
                     <div class="cert-subtitle">(First-Time Jobseekers Assistance Act - RA 11261)</div>
                 </div>
 
                 <!-- Document Content -->
                 <div class="content-text">
-                    <p class="fw-bold mb-3" style="text-indent: 0 !important;">TO WHOM IT MAY CONCERN:</p>
-                    
-                    <p>
-                        THIS IS TO CERTIFY that <strong>{{ $formalFullName }}</strong>, a resident of Barangay Siempre Viva Sur, Mallig, Isabela, is a qualified applicant under RA 11261 known as the First-Time Job Seekers Act of 2019.
-                    </p>
-
-                    <p>
-                        I further certify that the bearer was informed of her rights, including the duties and responsibilities accorded by RA 11261, through the Oath of Undertaking she has signed and executed in the presence of our Barangay Official.
-                    </p>
-
-                    <p class="mb-4">
-                        Signed this {{ date('jS') }} day of {{ date('F Y') }} at Barangay Siempre Viva Sur, Mallig, Isabela.
-                    </p>
+                    @if(!empty($certTemplate->salutation))
+                    <p class="fw-bold mb-3" style="text-indent: 0 !important;">{{ $certTemplate->salutation }}</p>
+                    @endif
+                    <div class="tpl-body tpl-cert">{!! $certBodyHtml !!}</div>
                 </div>
 
                 <!-- Vertical Signatory Blocks for Page 1 -->
@@ -129,9 +128,9 @@
                         @endif
                     </div>
                     <div>
-                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">SCAN FOR MORE INFO. OR EMAIL</span>
-                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">Brgy. Siempre Viva Sur, Mallig, Isabela</span>
-                        <span class="text-primary" style="font-size: 9pt;">siemprevivasurbarangay@gmail.com</span>
+                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">{{ $settings->footer_label }}</span>
+                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">{{ $settings->footer_address }}</span>
+                        @if($settings->footer_email)<span class="text-primary" style="font-size: 9pt;">{{ $settings->footer_email }}</span>@endif
                     </div>
                 </div>
             </div>
@@ -150,10 +149,9 @@
                     </div>
                     
                     <div class="header-text">
-                        <span>REPUBLIC OF THE PHILIPPINES</span><br>
-                        <span>PROVINCE OF ISABELA</span><br>
-                        <span>MUNICIPALITY OF MALLIG</span><br>
-                        <span>BARANGAY OF SIEMPRE VIVA SUR</span>
+                        @foreach($settings->header_lines_list as $line)
+                        <span>{{ $line }}</span>@if(!$loop->last)<br>@endif
+                        @endforeach
                     </div>
 
                     <div style="width: 85px; height: 85px; flex-shrink: 0;">
@@ -166,35 +164,17 @@
                 </div>
 
                 <hr style="border-top: 2px solid #000; opacity: 1;" class="my-1">
-                <div class="office-text">Office of the Punong Barangay</div>
+                <div class="office-text">{{ $settings->header_office }}</div>
 
                 <!-- Oath Title -->
                 <div style="text-align: center; margin: 10px 0 15px 0;">
-                    <h1 style="font-family: 'Algerian', serif; font-size: 14pt; font-weight: bold; letter-spacing: 1px; margin: 0;">OATH OF UNDERTAKING</h1>
+                    <h1 style="font-family: 'Algerian', serif; font-size: 14pt; font-weight: bold; letter-spacing: 1px; margin: 0;">{{ $oathTemplate->title }}</h1>
                     <div style="font-family: 'Aptos Display', sans-serif; font-size: 10pt; color: #333; margin-top: 2px;">Republic Act 11261 - First Time Job Seekers Assistance Act</div>
                 </div>
 
                 <!-- Document Content (9 Declarations) -->
                 <div style="font-family: 'Century Gothic', Arial, sans-serif; font-size: 10pt; text-align: justify; line-height: 1.45;">
-                    <p class="mb-2" style="text-indent: 40px;">
-                        <strong>I, {{ $standardFullName }}</strong>, {{\Carbon\Carbon::parse($resident->birth_date)->age}} years of age, resident of Barangay Siempre Viva Sur, Mallig, Isabela, availing the benefit of Republic Act <strong>11261</strong>, otherwise known as the <strong>First Time Jobseekers Act of 2019</strong>, agree and undertake to abide and be bound by the following:
-                    </p>
-
-                    <ul style="list-style: none; padding-left: 40px; text-align: justify; margin-bottom: 8px;">
-                        <li><strong>1.</strong> That is the first time that I will actively take a job and therefore request that the Barangay Certification be issued in my favor to avail the benefit of the law;</li>
-                        <li><strong>2.</strong> That I am aware that the benefit and privilege/s under the said law shall be valid only for one (1) year from the date that the Barangay Certification is issued;</li>
-                        <li><strong>3.</strong> That I can avail myself of the benefits of the law only once;</li>
-                        <li><strong>4.</strong> That I understand that my personal information shall be included in the Roster/List of the First Time Jobseekers and not be used for any unlawful purpose;</li>
-                        <li><strong>5.</strong> That I will inform and/or report to the Barangay personally, through text or other options, that I am not a beneficiary of the Job Start Program under RA No. 10869 and other laws that give similar exemptions for the documents and other transactions exempted under RA No. 11261;</li>
-                        <li><strong>6.</strong> That if issued the requested Certification, I will not use the same in any fraud, nor falsify nor help and/or assist in the fabrication of the said certification;</li>
-                        <li><strong>7.</strong> That this undertaking is made solely for the purpose of obtaining a barangay Certification consistent with the objective of RA No. 11261, and/or not for any other purpose;</li>
-                        <li><strong>8.</strong> That I consent to the use of my personal information pursuant to the Data Privacy Act and other applicable laws, rules, and regulations; and</li>
-                        <li><strong>9.</strong> That I consent to the use of my personal information pursuant to the Data Privacy Act and other applicable laws, rules, and regulations.</li>
-                    </ul>
-
-                    <p class="mt-2" style="text-indent: 40px;">
-                        Signed this {{ date('jS') }} day of {{ date('F Y') }},in Siempre Viva Sur, Mallig, Isabela.
-                    </p>
+                    <div class="tpl-body tpl-oath">{!! $oathBodyHtml !!}</div>
                 </div>
 
                 <!-- Horizontal Signatures Section for Page 2 (Signed by Applicant + Witnessed by Captain) -->
@@ -226,9 +206,9 @@
                         @endif
                     </div>
                     <div>
-                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">SCAN FOR MORE INFO. OR EMAIL</span>
-                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">Brgy. Siempre Viva Sur, Mallig, Isabela</span>
-                        <span class="text-primary" style="font-size: 9pt;">siemprevivasurbarangay@gmail.com</span>
+                        <span class="d-block" style="font-size: 9pt; letter-spacing: 0.5px;">{{ $settings->footer_label }}</span>
+                        <span class="fw-bold d-block text-muted" style="font-size: 9pt;">{{ $settings->footer_address }}</span>
+                        @if($settings->footer_email)<span class="text-primary" style="font-size: 9pt;">{{ $settings->footer_email }}</span>@endif
                     </div>
                 </div>
             </div>

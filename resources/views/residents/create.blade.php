@@ -4,8 +4,8 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Register New Resident</div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex align-items-center gap-2"><span class="stat-dot"><i class="bi bi-person-plus-fill"></i></span><span class="fw-bold fs-5">New Resident</span></div>
 
                 <div class="card-body">
                     @if($errors->has('duplicate'))
@@ -68,7 +68,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <a href="{{ route('residents.index') }}" class="btn btn-secondary me-2">Cancel</a>
+                            <a href="{{ route('residents.index') }}" class="btn btn-outline-secondary me-2">Cancel</a>
                             <button type="submit" class="btn btn-primary">Save Resident</button>
                         </div>
                     </form>

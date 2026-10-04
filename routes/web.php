@@ -8,6 +8,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CertificateTemplateController;
 use App\Http\Controllers\BarangaySettingController;
+use App\Http\Controllers\BarangayProfileController;
 
 Route::redirect('/', '/login');
 
@@ -45,6 +46,9 @@ Route::middleware(['auth', 'role:Admin,Secretary'])->group(function () {
 
     // Certificate Templates
     Route::get('/templates/{type}', [CertificateTemplateController::class, 'show'])->name('templates.edit');
+    Route::get('/templates/{type}/edit', [CertificateTemplateController::class, 'edit'])->name('templates.body');
+    Route::put('/templates/{type}', [CertificateTemplateController::class, 'update'])->name('templates.update');
+    Route::delete('/templates/{type}', [CertificateTemplateController::class, 'reset'])->name('templates.reset');
     
     // Resident Management (Edit, Update, Destroy / Archive)
     Route::get('/residents/{resident}/edit', [ResidentController::class, 'edit'])->name('residents.edit');
@@ -68,4 +72,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::resource('users', UserController::class);
 
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggleStatus');
+
+    // Barangay name (changes every place the barangay name is shown)
+    Route::get('/barangay', [BarangayProfileController::class, 'edit'])->name('barangay.edit');
+    Route::put('/barangay', [BarangayProfileController::class, 'update'])->name('barangay.update');
 });

@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Resident;
 use App\Models\Certificate;
-use App\Models\AuditLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB; 
-use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -45,15 +43,7 @@ class DashboardController extends Controller
         // 4. Recent Document Issuances Feed (Last 5)
         $recentCertificates = Certificate::with('resident')->latest()->take(5)->get();
 
-        // 5. Admin Audit Logs Feed (Only fetched if user is admin)
-        $recentLogs = collect();
-        $user = Auth::user();
-
-        if ($user && $user->role === 'Admin') {
-            $recentLogs = AuditLog::with('user')->latest()->take(5)->get();
-        }
-
-        // 6. Quick Resident Search Lookup
+        // 5. Quick Resident Search Lookup
         $searchResults = collect();
         if ($request->filled('q')) {
             $searchTerm = $request->q;
@@ -66,7 +56,7 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        // 7. Fetch Barangay Settings for the Digital Signature Toggle
+        // 6. Fetch Barangay Settings for the Digital Signature Toggle
         $settings = \App\Models\BarangaySetting::first();
 
         return view('dashboard.index', compact(
@@ -79,7 +69,6 @@ class DashboardController extends Controller
             'dayLabels',     // Pass to view
             'dayValues',     // Pass to view
             'recentCertificates', 
-            'recentLogs',
             'searchResults',
             'settings'
         ));

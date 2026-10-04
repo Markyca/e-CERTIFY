@@ -35,13 +35,31 @@ class ResidentController extends Controller
             $query->where('purok', $request->purok);
         }
 
-        // 3. Sort alphabetically and paginate
+        // 3. Filter by Gender
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->gender);
+        }
+
+        // 4. Filter by Civil Status
+        if ($request->filled('civil_status')) {
+            $query->where('civil_status', $request->civil_status);
+        }
+
+        // 5. Sort alphabetically and paginate
         $residents = $query->orderBy('last_name', 'ASC')
                         ->orderBy('first_name', 'ASC')
                         ->paginate(10)
                         ->withQueryString();
 
-        return view('residents.index', compact('residents'));
+        // Filter options: the standard choices plus anything already stored
+        $genders = collect(['Male', 'Female'])
+            ->merge(Resident::where('is_active', true)->distinct()->pluck('gender'))
+            ->filter()->unique()->values();
+        $civilStatuses = collect(['Single', 'Married', 'Widowed'])
+            ->merge(Resident::where('is_active', true)->distinct()->pluck('civil_status'))
+            ->filter()->unique()->values();
+
+        return view('residents.index', compact('residents', 'genders', 'civilStatuses'));
     }
 
     // Show the form to add a new resident

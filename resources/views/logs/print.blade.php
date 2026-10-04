@@ -26,8 +26,8 @@
         <!-- Official Header -->
         <div class="text-center mb-4">
             <h5 class="fw-bold text-uppercase mb-1">Republic of the Philippines</h5>
-            <h6 class="text-muted mb-1">Province of Isabela — Municipality of Mallig</h6>
-            <h4 class="fw-bold text-dark mt-2">BARANGAY SIEMPRE VIVA SUR</h4>
+            <h6 class="text-muted mb-1">Province of {{ $brgy->identity()['province'] }} — Municipality of {{ $brgy->identity()['municipality'] }}</h6>
+            <h4 class="fw-bold text-dark mt-2">BARANGAY {{ mb_strtoupper($brgy->identity()['barangay']) }}</h4>
             <hr class="w-50 mx-auto">
             <h5 class="fw-bold text-dark mt-3">SYSTEM ACTIVITY AUDIT LOGS</h5>
             <p class="text-muted small">{{ $filterText }}</p>

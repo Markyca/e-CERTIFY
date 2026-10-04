@@ -25,10 +25,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Make $settings available to all views automatically
+        // Make $settings (saved row or null) and $brgy (saved row or defaults,
+        // used for the barangay name shown across the app) available to all views
         View::composer('*', function ($view) {
-            $settings = BarangaySetting::first();
-            $view->with('settings', $settings);
+            $view->with('settings', BarangaySetting::stored());
+            $view->with('brgy', BarangaySetting::current());
         });
 
         // Automatically log when any user logs in

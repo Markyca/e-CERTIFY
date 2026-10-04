@@ -13,7 +13,7 @@ class BarangaySettingController extends Controller
     // Display the settings page
     public function edit()
     {
-        // Get the single settings record, or create a default one if it doesn't exist yet[cite: 6]
+        // Get the single settings record, or create a default one if it doesn't exist yet
         $settings = BarangaySetting::first() ?? BarangaySetting::create([
             'captain_name' => 'HON. JOVENCIO P. EGIPTO',
             'captain_title' => 'Punong Barangay',
@@ -26,9 +26,18 @@ class BarangaySettingController extends Controller
     // Update the settings and handle file uploads
     public function update(Request $request)
     {
-        $settings = BarangaySetting::first();
+        $settings = BarangaySetting::first() ?? BarangaySetting::create([
+            'captain_name' => 'HON. JOVENCIO P. EGIPTO',
+            'captain_title' => 'Punong Barangay',
+            'show_signature' => true,
+        ]);
 
         $request->validate([
+            'header_lines' => 'required|string|max:600',
+            'header_office' => 'required|string|max:255',
+            'footer_label' => 'required|string|max:255',
+            'footer_address' => 'required|string|max:255',
+            'footer_email' => 'nullable|email|max:255',
             'captain_name' => 'required|string|max:255',
             'captain_title' => 'required|string|max:255',
             'lgu_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
@@ -41,18 +50,27 @@ class BarangaySettingController extends Controller
             'captain_name' => $request->captain_name,
             'captain_title' => $request->captain_title,
             'show_signature' => $request->has('show_signature'),
+            // Global header / footer shared by every certificate
+            'header_lines' => implode("\n", array_slice(array_values(array_filter(
+                array_map('trim', preg_split('/\r\n|\r|\n/', $request->header_lines)),
+                fn ($l) => $l !== ''
+            )), 0, 6)),
+            'header_office' => trim($request->header_office),
+            'footer_label' => trim($request->footer_label),
+            'footer_address' => trim($request->footer_address),
+            'footer_email' => $request->filled('footer_email') ? trim($request->footer_email) : null,
         ];
 
-        // Handle file uploads safely[cite: 6]
+        // Handle file uploads safely
         $imageFields = ['lgu_logo', 'brgy_logo', 'qr_code', 'captain_signature'];
         
         foreach ($imageFields as $field) {
             if ($request->hasFile($field)) {
-                // Delete old image if it exists[cite: 6]
+                // Delete old image if it exists
                 if ($settings->$field && Storage::disk('public')->exists($settings->$field)) {
                     Storage::disk('public')->delete($settings->$field);
                 }
-                // Store new image in 'public/settings' folder[cite: 6]
+                // Store new image in 'public/settings' folder
                 $data[$field] = $request->file($field)->store('settings', 'public');
             }
         }
@@ -63,11 +81,11 @@ class BarangaySettingController extends Controller
         AuditLog::create([
             'user_id' => Auth::id(),
             'action' => 'SETTINGS_UPDATED',
-            'description' => "Updated global Barangay configuration and official signatories.",
+            'description' => "Updated global Barangay configuration, signatories, and certificate header/footer.",
             'ip_address' => request()->ip(),
         ]);
 
-        return redirect()->route('settings.edit')->with('success', 'Barangay global settings updated successfully[cite: 6].');
+        return redirect()->route('settings.edit')->with('success', 'Barangay global settings updated successfully.');
     }
 
     // Instant AJAX update for the dashboard digital signature toggle
