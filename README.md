@@ -1,59 +1,137 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# e-CERTIFY
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A certificate issuance system for barangays. Staff look up a resident, pick a certificate, and print it with an automatic control number, while every action is recorded in an audit log.
 
-## About Laravel
+**Current version:** 1.0.3 &nbsp;·&nbsp; Built with Laravel 12 &nbsp;·&nbsp; Developed by Mark Indayon
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Certificates**
+- Barangay Clearance, Certificate of Residency, Certificate of Indigency
+- First Time Job Seeker (certification and Oath of Undertaking, printed as a two-page set with a witness)
+- Automatic control numbers, issuance history, and printable history reports
+- Editable certificate bodies with placeholders such as `{name}`, `{age}`, `{purok}` and `{barangay}`, a live preview, and a "restore default" option
+- One global header and footer, edited once in Settings, applied to every certificate
 
-## Learning Laravel
+**Residents**
+- Resident master file with search and filters for Purok, Gender and Civil Status
+- Archive and restore, so a resident's document history is never lost
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+**Administration**
+- Role-based access (Admin, Secretary, Staff)
+- User management and a full audit log
+- Barangay page that sets the barangay, municipality and province used across the whole system, so any barangay can use it
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Interface**
+- White and blue theme, collapsible sidebar, dashboard with charts, expandable quick search
+- Show/hide password buttons and a Remember Me option on the login page
 
-## Laravel Sponsors
+## Who can do what
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Area | Staff | Secretary | Admin |
+|---|:---:|:---:|:---:|
+| Dashboard, resident list, add residents | ✅ | ✅ | ✅ |
+| Issue certificates and view history | ✅ | ✅ | ✅ |
+| Edit or archive residents, restore archive | | ✅ | ✅ |
+| Certificate layouts, body editor, Settings & Assets | | ✅ | ✅ |
+| System logs, Users, Barangay page | | | ✅ |
 
-### Premium Partners
+## Requirements
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- PHP 8.2 or newer
+- Composer
+- MySQL or MariaDB (the Users page uses a MySQL function, so SQLite is not recommended)
+- A web server or `php artisan serve` for local use
 
-## Contributing
+## Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone https://github.com/Markyca/e-CERTIFY.git
+cd e-CERTIFY
 
-## Code of Conduct
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Open `.env` and set your database details:
 
-## Security Vulnerabilities
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=e_certify
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Create an empty database with that name, then:
 
-## License
+```bash
+php artisan migrate
+php artisan storage:link
+php artisan serve
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Open http://127.0.0.1:8000 in your browser. The `storage:link` step is needed so uploaded logos, the QR code and the signature show up.
+
+### Create the first Admin account
+
+Accounts are created by an Admin inside the app, so the very first one has to be made by hand:
+
+```bash
+php artisan tinker
+```
+
+```php
+\App\Models\User::create([
+    'name' => 'Your Name',
+    'email' => 'you@example.com',
+    'password' => 'choose-a-strong-password',
+    'role' => 'Admin',
+]);
+```
+
+The role must be written exactly as `Admin`, `Secretary` or `Staff`. After signing in, add everyone else from the **Users** page.
+
+> The existing `UserSeeder` uses different role names and a sample password, so don't use it for a real installation.
+
+## Setting up for your barangay
+
+After the first login, as Admin:
+
+1. Open **Barangay** and enter your barangay, municipality and province. This updates the login page, sidebar, certificate texts, header, footer address and printed reports.
+2. Open **Certificates → Settings & Assets** and set the Punong Barangay name and title, the header lines, footer, and the LGU logo, barangay logo, QR code and signature images.
+3. Open each certificate layout and press **Edit** to adjust the wording. On the First Time Job Seeker page you can also set the default witness.
+
+## Updating
+
+```bash
+git pull
+composer install
+php artisan migrate
+```
+
+To change the version number shown in the app, edit `'version'` in `config/app.php`.
+
+## Project layout
+
+| Path | What it holds |
+|---|---|
+| `app/Http/Controllers` | Residents, certificates, templates, settings, users, logs, barangay |
+| `app/Models` | `BarangaySetting` (identity, header/footer, witness) and `CertificateTemplate` (bodies and placeholders) |
+| `resources/views` | Blade pages; `layouts/app.blade.php` holds the sidebar |
+| `public/css/theme.css` | The blue and white theme |
+| `routes/web.php` | All routes, grouped by role |
+
+## Notes
+
+- Never commit your `.env` file. It is already ignored by Git.
+- Change any sample or default passwords before real use.
+- Bootstrap, Bootstrap Icons, Chart.js and the Inter font load from a CDN, so the pages need an internet connection.
+
+## Credits
+
+System developed by **Mark Indayon**. Built on the [Laravel](https://laravel.com) framework.
