@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Certificate Issuance History Report</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
     <style>
         body { background: white; font-family: 'Times New Roman', Times, serif; }
         @media print {

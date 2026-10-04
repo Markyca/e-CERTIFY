@@ -106,6 +106,10 @@ After the first login, as Admin:
 2. Open **Certificates → Settings & Assets** and set the Punong Barangay name and title, the header lines, footer, and the LGU logo, barangay logo, QR code and signature images.
 3. Open each certificate layout and press **Edit** to adjust the wording. On the First Time Job Seeker page you can also set the default witness.
 
+## Deploying on a barangay computer (offline)
+
+To run the system on a barangay PC that starts by itself, with no internet, no `php artisan serve` and no `npm run dev`, follow **[DEPLOYMENT.md](DEPLOYMENT.md)**. The `deploy/` folder holds the helper scripts for packaging, setup and daily backups.
+
 ## Updating
 
 ```bash
@@ -130,7 +134,8 @@ To change the version number shown in the app, edit `'version'` in `config/app.p
 
 - Never commit your `.env` file. It is already ignored by Git.
 - Change any sample or default passwords before real use.
-- Bootstrap, Bootstrap Icons, Chart.js and the Inter font load from a CDN, so the pages need an internet connection.
+- Bootstrap, Bootstrap Icons, Chart.js and the Inter font are bundled in `public/vendor`, so the system works fully offline.
+- Public registration and "Forgot password" are turned off. An Admin creates accounts and resets passwords from the Users page.
 
 ## Credits
 

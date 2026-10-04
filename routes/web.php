@@ -12,7 +12,9 @@ use App\Http\Controllers\BarangayProfileController;
 
 Route::redirect('/', '/login');
 
-Auth::routes();
+// Login/logout only. Accounts are created by an Admin on the Users page, and
+// password resets are done by an Admin too (e-mail is not available offline).
+Auth::routes(['register' => false, 'reset' => false, 'verify' => false]);
 
 // ==========================================
 // 1. GENERAL GROUP (Accessible by Admin, Secretary, & Staff)
