@@ -61,6 +61,7 @@
                                     <option value="TEMPLATE_UPDATED" {{ request('action') == 'TEMPLATE_UPDATED' ? 'selected' : '' }}>TEMPLATE_UPDATED</option>
                                     <option value="TEMPLATE_RESET" {{ request('action') == 'TEMPLATE_RESET' ? 'selected' : '' }}>TEMPLATE_RESET</option>
                                     <option value="BARANGAY_UPDATED" {{ request('action') == 'BARANGAY_UPDATED' ? 'selected' : '' }}>BARANGAY_UPDATED</option>
+                                    <option value="DUTY_KAGAWAD_TOGGLE" {{ request('action') == 'DUTY_KAGAWAD_TOGGLE' ? 'selected' : '' }}>DUTY_KAGAWAD_TOGGLE</option>
                                 </optgroup>
                             </select>
                         </div>

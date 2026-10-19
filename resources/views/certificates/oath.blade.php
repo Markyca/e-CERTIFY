@@ -180,6 +180,7 @@
                         <div style="height: 25px;"></div> <!-- Space for physical signature / breathing room -->
                         <strong class="d-block text-uppercase ">{{ $settings->captain_name }}</strong>
                         <span style="font-size: 11pt;">{{ $settings->captain_title }}</span>
+                        @include('certificates.partials.duty-kagawad', ['dutyKagawad' => $dutyKagawad ?? null])
                     </div>
 
                 </div>

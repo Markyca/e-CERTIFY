@@ -105,16 +105,17 @@
                     <div class="text-center">
                         <strong class="d-block text-uppercase">{{ $settings->captain_name }}</strong>
                         <span style="font-size: 12pt;">{{ $settings->captain_title }}</span>
-                        <span class="d-block" style="font-size: 12pt;">{{ date('F j, Y') }}</span>
+                        <span class="d-block" style="font-size: 12pt;">{{ $issuedDate }}</span>
                     </div>
+                    @include('certificates.partials.duty-kagawad', ['dutyKagawad' => $dutyKagawad ?? null])
                 </div>
 
                 <div style="margin-top: 20px; float: right; text-align: center; font-family: 'Century Gothic', Arial, sans-serif; font-size: 12pt; min-width: 280px; clear: both;">
                     <div class="text-start mb-1" style="text-align: left !important; font-size: 12pt;">Witnessed by:</div>
                     <div class="text-center mt-2">
-                        <strong class="d-block text-uppercase" style="margin-top: 30px;">{{ strtoupper($witnessName) }}</strong>
+                        <strong class="d-block text-uppercase" style="margin-top: 30px;">{{ mb_strtoupper($witnessName, 'UTF-8') }}</strong>
                         <span style="font-size: 12pt;">{{ $witnessTitle }}</span>
-                        <span class="d-block" style="font-size: 12pt;">{{ date('F j, Y') }}</span>
+                        <span class="d-block" style="font-size: 12pt;">{{ $issuedDate }}</span>
                     </div>
                 </div>
 
@@ -193,6 +194,7 @@
                         <div style="height: 30px;"></div>
                         <strong class="d-block text-uppercase" style="font-size: 12pt;">{{ $settings->captain_name }}</strong>
                         <span style="font-size: 12pt;">{{ $settings->captain_title }}</span>
+                        @include('certificates.partials.duty-kagawad', ['dutyKagawad' => $dutyKagawad ?? null])
                     </div>
                 </div>
 

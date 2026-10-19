@@ -40,6 +40,9 @@ class BarangaySettingController extends Controller
             'footer_email' => 'nullable|email|max:255',
             'captain_name' => 'required|string|max:255',
             'captain_title' => 'required|string|max:255',
+            // Duty kagawad: the name is required when the option is switched on
+            'duty_kagawad_name' => 'nullable|string|max:255|required_if:duty_kagawad_active,1',
+            'duty_kagawad_title' => 'nullable|string|max:255',
             'lgu_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'brgy_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'qr_code' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
@@ -50,6 +53,9 @@ class BarangaySettingController extends Controller
             'captain_name' => $request->captain_name,
             'captain_title' => $request->captain_title,
             'show_signature' => $request->has('show_signature'),
+            'duty_kagawad_active' => $request->has('duty_kagawad_active'),
+            'duty_kagawad_name' => $request->filled('duty_kagawad_name') ? trim($request->duty_kagawad_name) : null,
+            'duty_kagawad_title' => trim((string) $request->duty_kagawad_title) ?: BarangaySetting::DEFAULT_DUTY_TITLE,
             // Global header / footer shared by every certificate
             'header_lines' => implode("\n", array_slice(array_values(array_filter(
                 array_map('trim', preg_split('/\r\n|\r|\n/', $request->header_lines)),
@@ -112,5 +118,33 @@ class BarangaySettingController extends Controller
             'success' => true, 
             'show_signature' => $settings->show_signature
         ]);
+    }
+
+    // Instant AJAX switch on the dashboard: the duty kagawad signs because the Punong Barangay is away
+    public function toggleDutyAjax(Request $request)
+    {
+        $settings = BarangaySetting::ensure();
+        $on = $request->boolean('active');
+
+        if ($on && trim((string) $settings->duty_kagawad_name) === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Enter the duty kagawad’s name in Settings & Assets first.',
+            ], 422);
+        }
+
+        $settings->duty_kagawad_active = $on;
+        $settings->save();
+
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'DUTY_KAGAWAD_TOGGLE',
+            'description' => $on
+                ? 'Switched ON the duty kagawad (' . $settings->duty_kagawad_name . ') to sign in place of the Punong Barangay.'
+                : 'Switched OFF the duty kagawad; the Punong Barangay signs again.',
+            'ip_address' => request()->ip(),
+        ]);
+
+        return response()->json(['success' => true, 'active' => $on]);
     }
 }

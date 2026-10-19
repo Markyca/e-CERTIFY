@@ -21,6 +21,9 @@ class CertificateTemplateController extends Controller
         'purpose'       => '[PURPOSE]',
         'day'           => '[DAY]',
         'month_year'    => '[MONTH] [YEAR]',
+        'his_her'       => '[HIS/HER]',
+        'he_she'        => '[HE/SHE]',
+        'legal_age'     => '[AGE]',
     ];
 
     protected function settings(): BarangaySetting
@@ -45,8 +48,9 @@ class CertificateTemplateController extends Controller
         $settings = $this->settings();
         $template = CertificateTemplate::forType($type);
         $bodyHtml = $template->renderBody(self::SAMPLE_VARS);
+        $dutyKagawad = $settings->duty();        // preview shows the duty kagawad when that option is on
 
-        return view('certificates.' . $type, compact('settings', 'type', 'template', 'bodyHtml'));
+        return view('certificates.' . $type, compact('settings', 'type', 'template', 'bodyHtml', 'dutyKagawad'));
     }
 
     /** Body editor for one certificate. */

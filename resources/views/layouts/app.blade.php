@@ -116,7 +116,7 @@
             <!-- Bottom-left: profile, logout and version, grouped -->
             <div class="sb-user">
                 <div class="sb-user-row">
-                    <span class="sb-avatar" title="{{ $navUser->name }}">{{ strtoupper(mb_substr($navUser->name, 0, 1)) }}</span>
+                    <span class="sb-avatar" title="{{ $navUser->name }}">{{ mb_strtoupper(mb_substr($navUser->name, 0, 1), 'UTF-8') }}</span>
                     <span class="sb-user-meta">
                         <strong>{{ $navUser->name }}</strong>
                         <small>{{ $navUser->role }}</small>

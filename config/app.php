@@ -19,7 +19,7 @@ return [
     | Software version shown in the sidebar footer.
     */
 
-    'version' => '1.0.3',
+    'version' => '1.0.4',
 
     /*
     |--------------------------------------------------------------------------

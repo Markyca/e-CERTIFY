@@ -63,6 +63,30 @@
                     </div>
                 </div>
 
+
+                <!-- Duty Kagawad -->
+                <div class="card border-0 shadow-sm p-4 mb-4">
+                    <div class="section-title"><span class="dot"><i class="bi bi-person-badge-fill"></i></span> Duty Kagawad
+                        <span class="hint ms-auto fs-6" data-bs-toggle="tooltip" title="Use when the Punong Barangay is away. The duty kagawad’s name is printed just below and to the left of the Punong Barangay’s name, and the Punong Barangay’s digital signature is hidden."><i class="bi bi-info-circle"></i></span>
+                    </div>
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3 mb-3" style="background: var(--ec-50);">
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input" type="checkbox" role="switch" id="dutyKagawadSwitch" name="duty_kagawad_active" value="1" {{ old('duty_kagawad_active', $settings->duty_kagawad_active) ? 'checked' : '' }}>
+                        </div>
+                        <label class="fw-semibold mb-0" for="dutyKagawadSwitch"><i class="bi bi-person-check-fill text-primary me-1"></i> Duty kagawad signs today</label>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small"><i class="bi bi-person text-primary me-1"></i> Name</label>
+                            <input type="text" name="duty_kagawad_name" class="form-control" value="{{ old('duty_kagawad_name', $settings->duty_kagawad_name) }}" placeholder="HON. FULL NAME">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small"><i class="bi bi-award text-primary me-1"></i> Title</label>
+                            <input type="text" name="duty_kagawad_title" class="form-control" value="{{ old('duty_kagawad_title', $settings->duty_kagawad_title ?: 'Barangay Kagawad (On Duty)') }}">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Global Header & Footer -->
                 <div class="card border-0 shadow-sm p-4 mb-4">
                     <div class="section-title">

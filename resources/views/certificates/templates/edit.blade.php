@@ -176,6 +176,7 @@
         const sample = {
             name: 'MR. JUAN D. DELA CRUZ', standard_name: 'JUAN D. DELA CRUZ', age: '27', gender: 'male',
             civil_status: 'single', purok: '3', purpose: 'employment', day: '2nd', month_year: 'October 2026',
+            his_her: 'her', he_she: 'she', legal_age: 'of legal age',
             ...@json($settings->identity())
         };
         const esc = (s) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

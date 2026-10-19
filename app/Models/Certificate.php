@@ -15,7 +15,12 @@ class Certificate extends Model
         'purpose',
         'control_number',
         'qr_code_path',
-        'issued_by'
+        'issued_by',
+        // Who signed / witnessed at the time of issue (so reprints look like the original)
+        'duty_kagawad_name',
+        'duty_kagawad_title',
+        'witness_name',
+        'witness_title',
     ];
 
     // Relationship: A certificate belongs to a specific resident

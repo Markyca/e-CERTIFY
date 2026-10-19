@@ -36,6 +36,9 @@ class CertificateTemplate extends Model
         'barangay'      => 'Barangay name',
         'municipality'  => 'Municipality',
         'province'      => 'Province',
+        'his_her'       => 'his or her (by gender)',
+        'he_she'        => 'he or she (by gender)',
+        'legal_age'     => '“of legal age” (or the age if under 18)',
     ];
 
     /** Maps a template key to the label used in the UI. */
@@ -75,7 +78,7 @@ class CertificateTemplate extends Model
             'residency' => [
                 'title' => 'CERTIFICATE OF RESIDENCY',
                 'salutation' => 'TO WHOM IT MAY CONCERN:',
-                'body_content' => "This is to certify that **{name}**, of legal age, {gender}, {civil_status}, and a Filipino Citizen. According to the records in this office, the above-named individual is a resident of Purok {purok}, {barangay}, {municipality}, {province}.\n\n"
+                'body_content' => "This is to certify that **{name}**, {legal_age}, {gender}, {civil_status}, and a Filipino Citizen. According to the records in this office, the above-named individual is a resident of Purok {purok}, {barangay}, {municipality}, {province}.\n\n"
                     . "This is issued upon the request of the interested party who needs the foregoing certification for whatever legal purpose it may serve.\n\n"
                     . $issued,
             ],
@@ -90,7 +93,7 @@ class CertificateTemplate extends Model
                 'title' => 'BARANGAY CERTIFICATION',
                 'salutation' => 'TO WHOM IT MAY CONCERN:',
                 'body_content' => "THIS IS TO CERTIFY that **{name}**, a resident of Barangay {barangay}, {municipality}, {province}, is a qualified applicant under RA 11261 known as the First-Time Job Seekers Act of 2019.\n\n"
-                    . "I further certify that the bearer was informed of her rights, including the duties and responsibilities accorded by RA 11261, through the Oath of Undertaking she has signed and executed in the presence of our Barangay Official.\n\n"
+                    . "I further certify that the bearer was informed of {his_her} rights, including the duties and responsibilities accorded by RA 11261, through the Oath of Undertaking {he_she} has signed and executed in the presence of our Barangay Official.\n\n"
                     . 'Signed this {day} day of {month_year} at Barangay {barangay}, {municipality}, {province}.',
             ],
             'oath' => [

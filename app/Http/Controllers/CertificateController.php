@@ -7,7 +7,8 @@ use App\Models\Certificate;
 use App\Models\CertificateTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
+use App\Support\NameFormatter;
 
 
 class CertificateController extends Controller
@@ -29,30 +30,34 @@ class CertificateController extends Controller
             'witness_title' => 'nullable|string|max:255',
         ]);
 
-        $controlNumber = 'BRGY-' . date('Y') . '-' . strtoupper(Str::random(6));
+        // A control number that is guaranteed not to repeat
+        do {
+            $controlNumber = 'BRGY-' . date('Y') . '-' . strtoupper(Str::random(6));
+        } while (Certificate::where('control_number', $controlNumber)->exists());
 
-        // 1. Create the certificate record
+        $settings = \App\Models\BarangaySetting::ensure();
+        $duty = $settings->duty();                       // set when the Punong Barangay is away
+        $isJobSeeker = $request->certificate_type === 'First Time Job Seeker';
+        $defaultWitness = $settings->witness();
+
+        // 1. Create the certificate record (who signed / witnessed is saved with it)
         $certificate = Certificate::create([
             'resident_id' => $request->resident_id,
             'certificate_type' => $request->certificate_type,
             'purpose' => $request->purpose,
             'control_number' => $controlNumber,
             'issued_by' => Auth::id(),
+            'duty_kagawad_name' => $duty['name'] ?? null,
+            'duty_kagawad_title' => $duty['title'] ?? null,
+            'witness_name' => $isJobSeeker ? (trim((string) $request->witness_name) ?: $defaultWitness['name']) : null,
+            'witness_title' => $isJobSeeker ? (trim((string) $request->witness_title) ?: $defaultWitness['title']) : null,
         ]);
-
-        // 2. Store witness info in session if it's a job seeker
-        if ($request->certificate_type === 'First Time Job Seeker') {
-            session([
-                'witness_name' => $request->witness_name,
-                'witness_title' => $request->witness_title,
-            ]);
-        }
 
         // 3. RECORD THE AUDIT LOG HERE
         \App\Models\AuditLog::create([
             'user_id' => Auth::id(),
             'action' => 'CERTIFICATE_ISSUED',
-            'description' => "Issued a {$certificate->certificate_type} (Control No: {$controlNumber}) for resident {$certificate->resident->first_name} {$certificate->resident->last_name}.",
+            'description' => "Issued a {$certificate->certificate_type} (Control No: {$controlNumber}) for resident {$certificate->resident->first_name} {$certificate->resident->last_name}" . ($duty ? " (signed by duty kagawad {$duty['name']})." : '.'),
             'ip_address' => request()->ip(),
         ]);
 
@@ -69,38 +74,44 @@ class CertificateController extends Controller
             'show_signature' => true,
         ]);
 
-        // Prepare Name Components with MR./MS.
-        $genderTitle = strtoupper($resident->gender) === 'FEMALE' ? 'MS.' : 'MR.';
-        $middleInitial = $resident->middle_name ? strtoupper(substr($resident->middle_name, 0, 1)) . '.' : '';
-        
-        $formalFullName = $genderTitle . ' ' . strtoupper($resident->first_name) . ' ' . ($middleInitial ? $middleInitial . ' ' : '') . strtoupper($resident->last_name);
-        $standardFullName = strtoupper($resident->first_name) . ' ' . ($middleInitial ? $middleInitial . ' ' : '') . strtoupper($resident->last_name);
+        // Names: MR. / MS. / MRS. (married, widowed), middle initial, name extension (Jr., Sr., III)
+        $formalFullName = NameFormatter::formal($resident);
+        $standardFullName = NameFormatter::standard($resident);
+
+        // Every date and the age are those of the day the certificate was ISSUED (a reprint must not change them)
+        $issued = $certificate->created_at ?? now();
+        $age = \Carbon\Carbon::parse($resident->birth_date)->diff($issued)->y;
 
         // Values available to the {shortcodes} used in editable certificate bodies
-        $age = \Carbon\Carbon::parse($resident->birth_date)->age;
-        $gender = strtolower($resident->gender);
-        $civilStatus = strtolower($resident->civil_status);
-        $purok = $resident->purok;
-        $purpose = strtolower($certificate->purpose);
-
         $vars = [
             'name'          => $formalFullName,
             'standard_name' => $standardFullName,
             'age'           => $age,
-            'gender'        => $gender,
-            'civil_status'  => $civilStatus,
-            'purok'         => $purok,
-            'purpose'       => $purpose,
-            'day'           => date('jS'),
-            'month_year'    => date('F Y'),
+            'gender'        => mb_strtolower(trim((string) $resident->gender), 'UTF-8'),
+            'civil_status'  => mb_strtolower(trim((string) $resident->civil_status), 'UTF-8'),
+            'purok'         => $resident->purok,
+            'purpose'       => NameFormatter::purposeText($certificate->purpose),
+            'day'           => $issued->format('jS'),
+            'month_year'    => $issued->format('F Y'),
+            'his_her'       => NameFormatter::hisHer($resident->gender),
+            'he_she'        => NameFormatter::heShe($resident->gender),
+            'legal_age'     => NameFormatter::legalAge($age),
         ];
+
+        // Date printed beside the signatories
+        $issuedDate = $issued->format('F j, Y');
+
+        // Duty kagawad signs in place of the Punong Barangay (saved with the certificate at issue time)
+        $dutyKagawad = $certificate->duty_kagawad_name
+            ? ['name' => $certificate->duty_kagawad_name, 'title' => $certificate->duty_kagawad_title ?: \App\Models\BarangaySetting::DEFAULT_DUTY_TITLE]
+            : null;
 
         // DETOUR: If it is a First Time Job Seeker, render the 2-page set
         if ($certificate->certificate_type == 'First Time Job Seeker') {
-            // Entered at issue time; otherwise the default witness saved on the Job Seeker edit page
+            // The witness saved with the certificate at issue time (older certificates: the default witness)
             $defaultWitness = $settings->witness();
-            $witnessName = session('witness_name') ?: $defaultWitness['name'];
-            $witnessTitle = session('witness_title') ?: $defaultWitness['title'];
+            $witnessName = $certificate->witness_name ?: $defaultWitness['name'];
+            $witnessTitle = $certificate->witness_title ?: $defaultWitness['title'];
 
             $certTemplate = CertificateTemplate::forType('jobseeker');
             $oathTemplate = CertificateTemplate::forType('oath');
@@ -113,6 +124,8 @@ class CertificateController extends Controller
                 'settings',
                 'witnessName',
                 'witnessTitle',
+                'issuedDate',
+                'dutyKagawad',
                 'formalFullName',
                 'standardFullName',
                 'certTemplate',
@@ -135,6 +148,8 @@ class CertificateController extends Controller
             'settings',
             'certificateTitle',
             'salutation',
+            'issuedDate',
+            'dutyKagawad',
             'bodyHtml'
         ));
     }

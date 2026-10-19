@@ -122,7 +122,7 @@ h1, h2, h3, h4, h5, h6 { color: var(--ec-ink); letter-spacing: -.01em; }
    Sidebar
    ========================================================================== */
 .sidebar {
-    --sb-w: 272px;
+    --sb-w: 288px;
     width: var(--sb-w);
     flex: 0 0 var(--sb-w);
     position: sticky; top: 0; height: 100vh;
@@ -143,9 +143,9 @@ h1, h2, h3, h4, h5, h6 { color: var(--ec-ink); letter-spacing: -.01em; }
     background: linear-gradient(145deg, #60a5fa 0%, #2563eb 55%, #1e40af 100%);
     box-shadow: 0 10px 22px -8px rgba(37, 99, 235, .7);
 }
-.sb-logo-text { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
-.sb-logo-text strong { font-size: 1.6rem; font-weight: 800; color: var(--ec-ink); letter-spacing: -.03em; }
-.sb-logo-text small { font-size: .78rem; color: var(--ec-muted); font-weight: 500; margin-top: 3px; white-space: nowrap; }
+.sb-logo-text { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; overflow: hidden; }
+.sb-logo-text strong { font-size: 1.55rem; font-weight: 800; color: var(--ec-ink); letter-spacing: -.03em; white-space: nowrap; }
+.sb-logo-text small { font-size: .78rem; color: var(--ec-muted); font-weight: 500; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sb-toggle {
     flex: 0 0 auto; width: 34px; height: 34px; border-radius: .7rem; border: 1px solid var(--ec-line);
     background: #fff; color: var(--ec-muted); display: grid; place-items: center; cursor: pointer;

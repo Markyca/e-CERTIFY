@@ -155,7 +155,7 @@
                 <!-- Signatory Block & Digital Signature -->
                 <div class="signatory">
                     <div class="text-center position-relative" style="min-width: 250px;">
-                        @if($settings->show_signature && $settings->captain_signature)
+                        @if($settings->show_signature && $settings->captain_signature && empty($dutyKagawad))
                             <div style="position: absolute; top: -60px; left: 50%; transform: translateX(-50%); z-index: 5; pointer-events: none;">
                                 <img src="{{ asset('storage/' . $settings->captain_signature) }}" alt="Captain Signature" style="height: 105px; width: auto; object-fit: contain;">
                             </div>
@@ -164,6 +164,7 @@
                         <strong class="d-block text-uppercase" style="position: relative; z-index: 6;">{{ $settings->captain_name }}</strong>
                         <span style="font-size: 12pt; position: relative; z-index: 6;">{{ $settings->captain_title }}</span>
                     </div>
+                    @include('certificates.partials.duty-kagawad', ['dutyKagawad' => $dutyKagawad ?? null])
                 </div>
 
                 <!-- Footer with QR Code -->

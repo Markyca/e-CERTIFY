@@ -156,7 +156,18 @@
                 </div>
             @endif
 
-            <div class="form-check form-switch m-0 ms-auto d-flex align-items-center gap-2" title="Show the digital signature on printed certificates">
+            @if(in_array(auth()->user()->role, ['Admin', 'Secretary']))
+                <div class="form-check form-switch m-0 ms-auto d-flex align-items-center gap-2" title="The Punong Barangay is away: the duty kagawad signs (set the name in Settings)">
+                    <input class="form-check-input m-0" type="checkbox" role="switch" id="dutySwitch" {{ optional($settings)->duty_kagawad_active ? 'checked' : '' }} style="cursor: pointer; width: 2.5em; height: 1.25em;">
+                    <label class="form-check-label small fw-semibold text-nowrap user-select-none" for="dutySwitch" style="cursor: pointer;">
+                        <i class="bi bi-person-badge-fill text-primary me-1"></i>Duty Kagawad
+                    </label>
+                </div>
+            @elseif(optional($settings)->duty_kagawad_active)
+                <span class="badge bg-primary bg-opacity-10 ms-auto" title="Certificates are signed by the duty kagawad"><i class="bi bi-person-badge-fill me-1"></i>Duty Kagawad ON</span>
+            @endif
+
+            <div class="form-check form-switch m-0 @if(!in_array(auth()->user()->role, ['Admin','Secretary']) && !optional($settings)->duty_kagawad_active) ms-auto @endif d-flex align-items-center gap-2" title="Show the digital signature on printed certificates">
                 <input class="form-check-input m-0" type="checkbox" role="switch" id="showSignatureSwitch" {{ optional($settings)->show_signature ? 'checked' : '' }} style="cursor: pointer; width: 2.5em; height: 1.25em;">
                 <label class="form-check-label small fw-semibold text-nowrap user-select-none" for="showSignatureSwitch" style="cursor: pointer;">
                     <i class="bi bi-pen-fill text-primary me-1"></i>Signature
@@ -403,6 +414,23 @@
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': @json(csrf_token()) },
                 body: JSON.stringify({ show_signature: this.checked ? 1 : 0 })
             }).then(r => r.json()).catch(err => console.error('Error updating signature setting:', err));
+        });
+    });
+</script>
+<script>
+    // ---------- Duty kagawad switch (Punong Barangay away) ----------
+    document.addEventListener('DOMContentLoaded', function () {
+        const sw = document.getElementById('dutySwitch');
+        if (!sw) return;
+        sw.addEventListener('change', function () {
+            const wanted = this.checked;
+            fetch(@json(route('settings.duty.ajax')), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': @json(csrf_token()) },
+                body: JSON.stringify({ active: wanted ? 1 : 0 })
+            }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
+                if (!ok || !d.success) { sw.checked = !wanted; alert(d.message || 'Could not change the duty kagawad setting.'); }
+            }).catch(() => { sw.checked = !wanted; alert('Could not change the duty kagawad setting.'); });
         });
     });
 </script>

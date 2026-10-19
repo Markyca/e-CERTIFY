@@ -2,7 +2,7 @@
 
 A certificate issuance system for barangays. Staff look up a resident, pick a certificate, and print it with an automatic control number, while every action is recorded in an audit log.
 
-**Current version:** 1.0.3 &nbsp;·&nbsp; Built with Laravel 12 &nbsp;·&nbsp; Developed by Mark Indayon
+**Current version:** 1.0.4 &nbsp;·&nbsp; Built with Laravel 12 &nbsp;·&nbsp; Developed by Mark Indayon
 
 ---
 

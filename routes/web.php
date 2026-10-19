@@ -60,6 +60,7 @@ Route::middleware(['auth', 'role:Admin,Secretary'])->group(function () {
     // Barangay Settings
     Route::get('/settings/barangay', [BarangaySettingController::class, 'edit'])->name('settings.edit');
     Route::put('/settings/barangay', [BarangaySettingController::class, 'update'])->name('settings.update');
+    Route::post('/settings/duty-kagawad-ajax', [BarangaySettingController::class, 'toggleDutyAjax'])->name('settings.duty.ajax');
 });
 
 // ==========================================

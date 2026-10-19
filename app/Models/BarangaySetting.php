@@ -20,6 +20,8 @@ class BarangaySetting extends Model
         'title' => 'Barangay Secretary',
     ];
 
+    public const DEFAULT_DUTY_TITLE = 'Barangay Kagawad (On Duty)';
+
     protected $fillable = [
         'captain_name',
         'captain_title',
@@ -41,6 +43,10 @@ class BarangaySetting extends Model
         // Default witness (First Time Job Seeker)
         'witness_name',
         'witness_title',
+        // Duty kagawad (signs when the Punong Barangay is away)
+        'duty_kagawad_active',
+        'duty_kagawad_name',
+        'duty_kagawad_title',
     ];
 
     /** Per-request cache of the single settings row. */
@@ -106,6 +112,20 @@ class BarangaySetting extends Model
             'name'  => trim((string) $this->witness_name) ?: self::DEFAULT_WITNESS['name'],
             'title' => trim((string) $this->witness_title) ?: self::DEFAULT_WITNESS['title'],
         ];
+    }
+
+    /** The duty kagawad as ['name' => ..., 'title' => ...], or null when the option is off or no name is set. */
+    public function duty(): ?array
+    {
+        if (! $this->duty_kagawad_active) {
+            return null;
+        }
+        $name = trim((string) $this->duty_kagawad_name);
+        if ($name === '') {
+            return null;
+        }
+
+        return ['name' => $name, 'title' => trim((string) $this->duty_kagawad_title) ?: self::DEFAULT_DUTY_TITLE];
     }
 
     /** Default header lines built from the identity (used if none are saved). */
