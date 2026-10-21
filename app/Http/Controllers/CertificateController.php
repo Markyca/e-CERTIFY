@@ -39,6 +39,7 @@ class CertificateController extends Controller
         $duty = $settings->duty();                       // set when the Punong Barangay is away
         $isJobSeeker = $request->certificate_type === 'First Time Job Seeker';
         $defaultWitness = $settings->witness();
+        $dutyApplied = $isJobSeeker ? null : $duty;
 
         // 1. Create the certificate record (who signed / witnessed is saved with it)
         $certificate = Certificate::create([
@@ -47,8 +48,9 @@ class CertificateController extends Controller
             'purpose' => $request->purpose,
             'control_number' => $controlNumber,
             'issued_by' => Auth::id(),
-            'duty_kagawad_name' => $duty['name'] ?? null,
-            'duty_kagawad_title' => $duty['title'] ?? null,
+            // the duty kagawad signs only the clearance, residency and indigency certificates
+            'duty_kagawad_name' => $isJobSeeker ? null : ($duty['name'] ?? null),
+            'duty_kagawad_title' => $isJobSeeker ? null : ($duty['title'] ?? null),
             'witness_name' => $isJobSeeker ? (trim((string) $request->witness_name) ?: $defaultWitness['name']) : null,
             'witness_title' => $isJobSeeker ? (trim((string) $request->witness_title) ?: $defaultWitness['title']) : null,
         ]);
@@ -57,7 +59,7 @@ class CertificateController extends Controller
         \App\Models\AuditLog::create([
             'user_id' => Auth::id(),
             'action' => 'CERTIFICATE_ISSUED',
-            'description' => "Issued a {$certificate->certificate_type} (Control No: {$controlNumber}) for resident {$certificate->resident->first_name} {$certificate->resident->last_name}" . ($duty ? " (signed by duty kagawad {$duty['name']})." : '.'),
+            'description' => "Issued a {$certificate->certificate_type} (Control No: {$controlNumber}) for resident {$certificate->resident->first_name} {$certificate->resident->last_name}" . ($dutyApplied ? " (signed by duty kagawad {$dutyApplied['name']})." : '.'),
             'ip_address' => request()->ip(),
         ]);
 
@@ -125,7 +127,6 @@ class CertificateController extends Controller
                 'witnessName',
                 'witnessTitle',
                 'issuedDate',
-                'dutyKagawad',
                 'formalFullName',
                 'standardFullName',
                 'certTemplate',

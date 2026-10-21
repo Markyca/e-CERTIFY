@@ -107,7 +107,6 @@
                         <span style="font-size: 12pt;">{{ $settings->captain_title }}</span>
                         <span class="d-block" style="font-size: 12pt;">{{ $issuedDate }}</span>
                     </div>
-                    @include('certificates.partials.duty-kagawad', ['dutyKagawad' => $dutyKagawad ?? null])
                 </div>
 
                 <div style="margin-top: 20px; float: right; text-align: center; font-family: 'Century Gothic', Arial, sans-serif; font-size: 12pt; min-width: 280px; clear: both;">
@@ -194,7 +193,6 @@
                         <div style="height: 30px;"></div>
                         <strong class="d-block text-uppercase" style="font-size: 12pt;">{{ $settings->captain_name }}</strong>
                         <span style="font-size: 12pt;">{{ $settings->captain_title }}</span>
-                        @include('certificates.partials.duty-kagawad', ['dutyKagawad' => $dutyKagawad ?? null])
                     </div>
                 </div>
 

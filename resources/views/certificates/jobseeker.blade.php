@@ -177,7 +177,6 @@
                         <span style="font-size: 11pt;">{{ $settings->captain_title }}</span>
                         <span class="d-block text-muted" style="font-size: 10pt;">[Date]</span>
                     </div>
-                    @include('certificates.partials.duty-kagawad', ['dutyKagawad' => $dutyKagawad ?? null])
                 </div>
 
                 <!-- Witness / Secretary Signatory Block -->

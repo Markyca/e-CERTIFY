@@ -67,7 +67,7 @@
                 <!-- Duty Kagawad -->
                 <div class="card border-0 shadow-sm p-4 mb-4">
                     <div class="section-title"><span class="dot"><i class="bi bi-person-badge-fill"></i></span> Duty Kagawad
-                        <span class="hint ms-auto fs-6" data-bs-toggle="tooltip" title="Use when the Punong Barangay is away. The duty kagawad’s name is printed just below and to the left of the Punong Barangay’s name, and the Punong Barangay’s digital signature is hidden."><i class="bi bi-info-circle"></i></span>
+                        <span class="hint ms-auto fs-6" data-bs-toggle="tooltip" title="Use when the Punong Barangay is away. The duty kagawad’s name is printed just below and to the left of the Punong Barangay’s name, and the Punong Barangay’s digital signature is hidden. It is not used on the First Time Job Seeker certificate or the Oath of Undertaking."><i class="bi bi-info-circle"></i></span>
                     </div>
                     <div class="p-3 rounded-3 d-flex align-items-center gap-3 mb-3" style="background: var(--ec-50);">
                         <div class="form-check form-switch m-0">

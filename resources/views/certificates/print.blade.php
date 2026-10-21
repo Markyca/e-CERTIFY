@@ -77,7 +77,7 @@
                         margin-bottom: 12px;
                     }
                     .signatory {
-                        margin-top: 45px;
+                        margin-top: 55px;
                         float: right;
                         text-align: center;
                         font-family: 'Century Gothic', Arial, sans-serif;
@@ -105,7 +105,7 @@
                 
                     /* Editable certificate body */
                     .tpl-body p { text-indent: 45px; margin-bottom: 12px; text-align: justify; }
-                    .tpl-body p:last-child { margin-bottom: 4rem; }
+                    .tpl-body p:last-child { margin-bottom: 0; }
                     .tpl-body ul.tpl-list { list-style: none; padding-left: 40px; text-align: justify; margin-bottom: 8px; }
                     .tpl-body ul.tpl-list li { margin-bottom: 2px; }
                 </style>
@@ -164,8 +164,8 @@
                         <strong class="d-block text-uppercase" style="position: relative; z-index: 6;">{{ $settings->captain_name }}</strong>
                         <span style="font-size: 12pt; position: relative; z-index: 6;">{{ $settings->captain_title }}</span>
                     </div>
-                    @include('certificates.partials.duty-kagawad', ['dutyKagawad' => $dutyKagawad ?? null])
                 </div>
+                    @include('certificates.partials.duty-kagawad', ['dutyKagawad' => $dutyKagawad ?? null])
 
                 <!-- Footer with QR Code -->
                 <div class="certificate-footer">
